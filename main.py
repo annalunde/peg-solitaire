@@ -4,11 +4,10 @@ from simworld import Environment
 
 
 def main():
-    #her er test
-    env = Environment(step_reward=0, final_reward=1, loser_penalty=0, boardsize=4, open_cells=[(2, 1)],
+    env = Environment(step_reward=0, final_reward=2, loser_penalty=-5, boardsize=4, open_cells=[(2, 1)],
                       board_type="Diamond", track_history=True)
-    critic = CriticDict(learning_rate=1, eli_decay=1, discount_factor=1)
-    actor = Actor(learning_rate=1, discount_factor=1, eli_decay=1, epsilon=0.1)
+    critic = CriticDict(learning_rate=0.9, eli_decay=0.9, discount_factor=0.9)
+    actor = Actor(learning_rate=0.9, discount_factor=0.9, eli_decay=0.9, epsilon=0.1)
 
     for episode in range(2000):
         env.new_game()
