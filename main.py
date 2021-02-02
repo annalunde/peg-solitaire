@@ -4,6 +4,7 @@ from simworld import Environment
 
 
 def main():
+    #her er test
     env = Environment(step_reward=0, final_reward=1, loser_penalty=0, boardsize=4, open_cells=[(2, 1)],
                       board_type="Diamond", track_history=True)
     critic = CriticDict(learning_rate=1, eli_decay=1, discount_factor=1)
