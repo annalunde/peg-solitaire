@@ -3,7 +3,7 @@ from collections import defaultdict
 
 
 # Using a dictionary to store state values
-class CriticDict():
+class CriticDict:
     def __init__(self, learning_rate, eli_decay, discount_factor):
         self.value_dict = defaultdict(lambda: 0)
         self.eli_dict = defaultdict(lambda: 0)

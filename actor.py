@@ -25,11 +25,11 @@ class Actor:
             self.eli_dict[(str(state), str(action))] = self.discount_factor * self.eli_decay * self.eli_dict[
                 (str(state), str(action))]
 
-    def get_policy(self, state, action):
+    def get_policy(self, state, action, length):
         if (str(state), str(action)) in self.policy_dict.keys():
             return self.policy_dict[(str(state), str(action))]
         else:
-            return 0
+            return random.choice([i for i in range(length)])
 
     def reset_eli_dict(self):
         self.eli_dict = defaultdict(lambda: 0)
@@ -37,7 +37,7 @@ class Actor:
     def get_action(self, state, legal_actions):
         self.epsilon = self.epsilon*0.9999
         if random.uniform(0, 1) >= self.epsilon:
-            return max(legal_actions, key=lambda action: self.get_policy(state, action))
+            return max(legal_actions, key=lambda action: self.get_policy(state, action, length=len(legal_actions)))
         return random.choice(legal_actions)
 
 
