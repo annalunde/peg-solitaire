@@ -2,6 +2,10 @@ from collections import defaultdict
 import random
 
 
+from collections import defaultdict
+import random
+
+
 class Actor:
 
     def __init__(self, learning_rate, discount_factor, eli_decay, epsilon=None):
@@ -14,8 +18,8 @@ class Actor:
 
     # Updates policy using: current_policy + learning_rate*td_err*eli_dict[state,action]
     def update_policy_dict(self, state, action, td_err):
-        self.policy_dict[(str(state), str(action))] += self.learning_rate * td_err * self.eli_dict[
-            (str(state), str(action))]
+        self.policy_dict[(str(state), str(action))] += self.learning_rate * \
+            td_err * self.eli_dict[(str(state), str(action))]
 
     # Updates eligibility using: discount_factor*eli_decay*eli_dict[state,action]
     def update_eli_dict(self, state, action, i):
@@ -25,19 +29,19 @@ class Actor:
             self.eli_dict[(str(state), str(action))] = self.discount_factor * self.eli_decay * self.eli_dict[
                 (str(state), str(action))]
 
-    def get_policy(self, state, action, length):
+    def get_policy(self, state, action):
         if (str(state), str(action)) in self.policy_dict.keys():
             return self.policy_dict[(str(state), str(action))]
         else:
-            return random.choice([i for i in range(length)])
+            return 0
 
     def reset_eli_dict(self):
         self.eli_dict = defaultdict(lambda: 0)
 
     def get_action(self, state, legal_actions):
-        self.epsilon = self.epsilon*0.9999
+        self.epsilon = self.epsilon*1
         if random.uniform(0, 1) >= self.epsilon:
-            return max(legal_actions, key=lambda action: self.get_policy(state, action, length=len(legal_actions)))
+            return max(legal_actions, key=lambda action: self.get_policy(state, action))
         return random.choice(legal_actions)
 
 
