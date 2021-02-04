@@ -2,16 +2,22 @@ from critic_dict import CriticDict
 from actor import Actor
 from simworld import Environment
 import yaml
-config = yaml.full_load(open("configs/large_diamond_table.yml"))
+config = yaml.full_load(open("configs/config_default.yml"))
 env_cfg = config["Environment"]
 actor_cfg = config["Actor"]
 critic_cfg = config["Critic_table"]
-
-
-
+training_cfg = config["Training"]
 
 
 def main():
+    """
+    Sets the parameters for the Environment, Critic, and Actor according to the imported config file.
+    Creates an environment where a predefined number of episodes can be performed.
+    Instantiates an actor to keep track of the policy, and a critic to keep track of the value at each state
+    Runs a predefined number of episodes creating a new board for each episode.
+    For each episode, the actor and the critic are updated according to the Actor-Critic model.
+    Finally, epsilon is set to zero, and the environment plays a game with the updated policy.
+    """
     env = Environment(step_reward=env_cfg["step_reward"],
                       final_reward=env_cfg["final_reward"],
                       loser_penalty=env_cfg["loser_penalty"],
@@ -27,7 +33,7 @@ def main():
                   eli_decay=actor_cfg["eli_decay"],
                   epsilon=actor_cfg["epsilon"])
 
-    for episode in range(10000):
+    for episode in range(training_cfg["number_of_episodes"]):
         env.new_game()
         path = []
         print(f"Playing episode number {episode+1}")
