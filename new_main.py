@@ -10,7 +10,7 @@ def main():
     actor = Actor(learning_rate=0.9, discount_factor=0.9,
                   eli_decay=0.9, epsilon=0.1)
 
-    for episode in range(1000):
+    for episode in range(100):
         env.new_game()
         path = []
         print(f"Playing episode number {episode+1}")
