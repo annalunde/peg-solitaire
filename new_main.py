@@ -2,6 +2,7 @@ from critic_dict import CriticDict
 from actor import Actor
 from simworld import Environment
 import yaml
+from math import exp
 config = yaml.full_load(open("configs/config_default.yml"))
 env_cfg = config["Environment"]
 actor_cfg = config["Actor"]
@@ -31,7 +32,8 @@ def main():
     actor = Actor(learning_rate=actor_cfg["learning_rate"],
                   discount_factor=actor_cfg["discount_factor"],
                   eli_decay=actor_cfg["eli_decay"],
-                  epsilon=actor_cfg["epsilon"])
+                  epsilon=actor_cfg["epsilon"],
+                  epsilon_decay=actor_cfg["epsilon_decay"])
 
     for episode in range(training_cfg["number_of_episodes"]):
         env.new_game()
@@ -72,7 +74,7 @@ def main():
         legal_actions = env.get_actions()
         action = actor.get_action(current_state, legal_actions)
         env.perform_action(action)
-    env.board.show_gameplay()
+    env.board.visualize(2)
 
 
 main()

@@ -150,12 +150,12 @@ class Board:
 
         # Start by creating a node graph that represents the board's size and neighbor edges,
         # fill node values with first board configuration
-        action, first_state = self.history[0]
+
         graph = nx.Graph()
         pos_dict = {}
 
-        for row in range(len(first_state)):
-            for col in range(len(first_state[row])):
+        for row in range(self.size):
+            for col in range(len(self.current_state[row])):
                 n = (row, col)
                 graph.add_node(n)
                 if isinstance(self, DiamondBoard):  # Scaling positions to make it look nice
@@ -333,7 +333,7 @@ class TriangleBoard(Board):
 
         # Append None action and snapshot of initial board state to history if tracking is ON
         if self.track_history:
-            self.history.append((None, self.current_state.copy()))
+            self.history.append((None, copy.deepcopy(self.current_state)))
 
     def validate_cell_coordinates(self, action):
         """

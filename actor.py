@@ -6,7 +6,7 @@ class Actor:
     The actor class keeps track of the policy to be used when deciding next move.
     Uses dictionaries to keep track of the value of each SAP pair and eligibility.
     """
-    def __init__(self, learning_rate, discount_factor, eli_decay, epsilon):
+    def __init__(self, learning_rate, discount_factor, eli_decay, epsilon, epsilon_decay):
         """
         Initializes an actor using a default value of 0 to allow accumulated values.
         :param learning_rate: float
@@ -15,6 +15,7 @@ class Actor:
         :param epsilon: float
         """
         self.epsilon = epsilon
+        self.epsilon_decay = epsilon_decay
         self.policy_dict = defaultdict(lambda: 0)
         self.eli_dict = {}  # defaultdict(lambda: 0)
         self.discount_factor = discount_factor
@@ -95,7 +96,7 @@ class Actor:
         :param state: list[list[int]]
         :param legal_actions: list[list[tuple(int,int)]]
         """
-        self.epsilon = self.epsilon*0.9999
+        self.epsilon = self.epsilon*self.epsilon_decay
         if random.uniform(0, 1) >= self.epsilon:
             return max(legal_actions, key=lambda action: self.get_policy(state, action))
         return random.choice(legal_actions)
