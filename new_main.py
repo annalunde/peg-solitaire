@@ -1,16 +1,33 @@
 from critic_dict import CriticDict
 from actor import Actor
 from simworld import Environment
+import yaml
+config = yaml.full_load(open("configs/large_diamond_table.yml"))
+env_cfg = config["Environment"]
+actor_cfg = config["Actor"]
+critic_cfg = config["Critic_table"]
+
+
+
 
 
 def main():
-    env = Environment(step_reward=0, final_reward=1, loser_penalty=0, boardsize=4, open_cells=[(2, 1)],
-                      board_type="Diamond", track_history=True)
-    critic = CriticDict(learning_rate=0.9, eli_decay=0.9, discount_factor=0.9)
-    actor = Actor(learning_rate=0.9, discount_factor=0.9,
-                  eli_decay=0.9, epsilon=0.1)
+    env = Environment(step_reward=env_cfg["step_reward"],
+                      final_reward=env_cfg["final_reward"],
+                      loser_penalty=env_cfg["loser_penalty"],
+                      boardsize=env_cfg["boardsize"],
+                      open_cells=env_cfg["open_cells"],
+                      board_type= env_cfg["board_type"],
+                      track_history=env_cfg["track_history"])
+    critic = CriticDict(learning_rate=critic_cfg["learning_rate"],
+                        eli_decay=critic_cfg["eli_decay"],
+                        discount_factor=critic_cfg["discount_factor"])
+    actor = Actor(learning_rate=actor_cfg["learning_rate"],
+                  discount_factor=actor_cfg["discount_factor"],
+                  eli_decay=actor_cfg["eli_decay"],
+                  epsilon=actor_cfg["epsilon"])
 
-    for episode in range(100):
+    for episode in range(10000):
         env.new_game()
         path = []
         print(f"Playing episode number {episode+1}")

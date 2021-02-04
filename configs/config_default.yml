@@ -1,0 +1,45 @@
+Critic_table:
+  #Learning rate -
+  learning_rate: 0.9
+
+  #Discount Factor
+  discount_factor: 0.9
+
+  #Eligibility decay
+  eli_decay: 0.9
+
+Actor:
+  #Learning rate
+  learning_rate: 0.9
+
+  #Discount Factor
+  discount_factor: 0.9
+
+  #Eligibility decay
+  eli_decay: 0.9
+
+  #Epsilon
+  epsilon: 0.1
+
+Environment:
+
+  #Boardsize
+  boardsize: 4
+
+  #Boardtype
+  board_type: "Diamond"
+
+  #Open cells
+  open_cells: [!!python/tuple [1,2]]
+
+  #Track history
+  track_history: True
+
+  #Step reward
+  step_reward: 0
+
+  #Final reward
+  final_reward: 1
+
+  #Loser penalty
+  loser_penalty: 0
