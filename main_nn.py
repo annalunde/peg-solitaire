@@ -1,16 +1,18 @@
 from critic_dict import CriticDict
 from actor import Actor
 from simworld import Environment
+from critic_nn import CriticNN
 
 
 def main():
-    env = Environment(step_reward=0, final_reward=1, loser_penalty=0, boardsize=5, open_cells=[(0, 0)],
-                      board_type="Triangle", track_history=True)
-    critic = CriticDict(learning_rate=0.9, eli_decay=0.9, discount_factor=0.9)
+    env = Environment(step_reward=0, final_reward=1, loser_penalty=0, boardsize=4, open_cells=[(2, 1)],
+                      board_type="Diamond", track_history=False)
     actor = Actor(learning_rate=0.9, discount_factor=0.9,
                   eli_decay=0.9, epsilon=0.1)
+    critic = CriticNN(dims=(15, 14, 3, 1), alpha=0.9,
+                      eli_decay=0.9, gamma=0.8, shape="Diamond")
 
-    for episode in range(10000):
+    for episode in range(1000):
         env.new_game()
         path = []
         print(f"Playing episode number {episode+1}")
