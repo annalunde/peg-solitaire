@@ -1,16 +1,39 @@
 from critic_dict import CriticDict
 from actor import Actor
 from simworld import Environment
+import yaml
+config = yaml.full_load(open("configs/config_default.yml"))
+env_cfg = config["Environment"]
+actor_cfg = config["Actor"]
+critic_cfg = config["Critic_table"]
+training_cfg = config["Training"]
 
 
 def main():
-    env = Environment(step_reward=0, final_reward=1, loser_penalty=0, boardsize=4, open_cells=[(2, 1)],
-                      board_type="Diamond", track_history=True)
-    critic = CriticDict(learning_rate=0.9, eli_decay=0.9, discount_factor=0.9)
-    actor = Actor(learning_rate=0.9, discount_factor=0.9,
-                  eli_decay=0.9, epsilon=0.1)
+    """
+    Sets the parameters for the Environment, Critic, and Actor according to the imported config file.
+    Creates an environment where a predefined number of episodes can be performed.
+    Instantiates an actor to keep track of the policy, and a critic to keep track of the value at each state
+    Runs a predefined number of episodes creating a new board for each episode.
+    For each episode, the actor and the critic are updated according to the Actor-Critic model.
+    Finally, epsilon is set to zero, and the environment plays a game with the updated policy.
+    """
+    env = Environment(step_reward=env_cfg["step_reward"],
+                      final_reward=env_cfg["final_reward"],
+                      loser_penalty=env_cfg["loser_penalty"],
+                      boardsize=env_cfg["boardsize"],
+                      open_cells=env_cfg["open_cells"],
+                      board_type= env_cfg["board_type"],
+                      track_history=env_cfg["track_history"])
+    critic = CriticDict(learning_rate=critic_cfg["learning_rate"],
+                        eli_decay=critic_cfg["eli_decay"],
+                        discount_factor=critic_cfg["discount_factor"])
+    actor = Actor(learning_rate=actor_cfg["learning_rate"],
+                  discount_factor=actor_cfg["discount_factor"],
+                  eli_decay=actor_cfg["eli_decay"],
+                  epsilon=actor_cfg["epsilon"])
 
-    for episode in range(100):
+    for episode in range(training_cfg["number_of_episodes"]):
         env.new_game()
         path = []
         print(f"Playing episode number {episode+1}")
