@@ -22,7 +22,7 @@ Actor:
   epsilon: 0.8
 
   #Epsilon decay
-  epsilon_decay: 0.99999
+  epsilon_decay: 0.9956275604353287
 
 Environment:
 

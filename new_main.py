@@ -84,7 +84,7 @@ def main():
         legal_actions = env.get_actions()
         action = actor.get_action(current_state, legal_actions)
         env.perform_action(action)
-    env.board.visualize(0.1)
+    env.board.visualize(0.3)
 
 
 main()
