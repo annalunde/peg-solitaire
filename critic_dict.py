@@ -7,10 +7,8 @@ class CriticDict:
     """
     CriticDict keeps track of the value and eligibility of each state using dictionaries.
     """
+
     def __init__(self, learning_rate, eli_decay, discount_factor):
-<<<<<<< HEAD
-        self.value_dict = defaultdict(lambda: 0)
-=======
         """
         Initializes a CriticDict using a default value of 0 to allow accumulated values.
         :param learning_rate: float
@@ -18,17 +16,11 @@ class CriticDict:
         :param discount_factor: float
         """
         self.value_dict = {}  # defaultdict(lambda: 0)
->>>>>>> 9a9584d5b882c37a8a1f971e9d27d7084b05efaf
         self.eli_dict = defaultdict(lambda: 0)
         self.learning_rate = learning_rate
         self.eli_decay = eli_decay
         self.discount_factor = discount_factor
 
-<<<<<<< HEAD
-    # Computes TD error from formula: r + discount_factor*V(s') - V(s)
-    def compute_td_err(self, current_state, next_state,
-                       reward):  # Skal reward tas inn her, eller skal det tas inn ved initialisering?
-=======
     def compute_td_err(self, current_state, next_state, reward):
         """
         TD error describes the difference between reward + next state and the current state.
@@ -37,20 +29,16 @@ class CriticDict:
         :param next_state: list[list[boolean]]
         :param reward: int
         """
->>>>>>> 9a9584d5b882c37a8a1f971e9d27d7084b05efaf
         return reward + self.discount_factor * self.get_value(next_state) - self.get_value(current_state)
 
     # Updates dictionary with the formula: V(S) = V(s) + learning_rate*td_err*eligibility
     # Oppdater for å ta inn SAP om nødvendig?
     def update_value_dict(self, state, td_err):
-<<<<<<< HEAD
-=======
         """
         Updates value_dict using the formula: V(S) = V(s) + learning_rate*td_err*eligibility
         :param state: list[list[boolean]]
         :param td_err: float
         """
->>>>>>> 9a9584d5b882c37a8a1f971e9d27d7084b05efaf
         if str(state) in self.value_dict.keys():
             self.value_dict[str(state)] += self.learning_rate * \
                 td_err * self.eli_dict[str(state)]
@@ -60,15 +48,12 @@ class CriticDict:
 
     # Updates eligibility dictionary using replacing traces: 1 if S = St, discount_factor*eli_decay*eli_dict[state]
     def update_eli_dict(self, state, i):  # i is index of state in history
-<<<<<<< HEAD
-=======
         """
         Updates eligibility dictionary using replacing traces: 1 if S = St (that is, i=0),
         else decay by formula: discount_factor*eli_decay*eli_dict[state]
         :param state: list[list[int]]
         :param i: int (0 for current state)
         """
->>>>>>> 9a9584d5b882c37a8a1f971e9d27d7084b05efaf
         if i == 0:
             self.eli_dict[str(state)] = 1
         else:
@@ -77,14 +62,11 @@ class CriticDict:
 
     # Return value for given state
     def get_value(self, state):
-<<<<<<< HEAD
-=======
         """
         Return value for given state
         If state has not been seen before, return random initial value between 0 and 1
         :param state: list[list[int]]
         """
->>>>>>> 9a9584d5b882c37a8a1f971e9d27d7084b05efaf
         if str(state) in self.value_dict.keys():
             return self.value_dict[str(state)]
         else:

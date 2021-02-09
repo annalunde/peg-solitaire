@@ -5,16 +5,18 @@ import yaml
 import matplotlib.pyplot as plt
 import time
 
-config = yaml.full_load(open("configs/5_triangle_table.yml"))
+config = yaml.full_load(open("aiprog/configs/5_triangle_table.yml"))
 env_cfg = config["Environment"]
 actor_cfg = config["Actor"]
 critic_cfg = config["Critic_table"]
 training_cfg = config["Training"]
 
+
 def plot_learning(remaining_pegs):
     episode = [i for i in range(len(remaining_pegs))]
     plt.plot(episode, remaining_pegs)
     plt.show()
+
 
 def main():
     """
@@ -30,7 +32,7 @@ def main():
                       loser_penalty=env_cfg["loser_penalty"],
                       boardsize=env_cfg["boardsize"],
                       open_cells=env_cfg["open_cells"],
-                      board_type= env_cfg["board_type"],
+                      board_type=env_cfg["board_type"],
                       track_history=env_cfg["track_history"])
     critic = CriticDict(learning_rate=critic_cfg["learning_rate"],
                         eli_decay=critic_cfg["eli_decay"],
@@ -42,11 +44,7 @@ def main():
                   epsilon_decay=actor_cfg["epsilon_decay"])
     remaining_pegs = []
 
-<<<<<<< HEAD
-    for episode in range(1000):
-=======
     for episode in range(training_cfg["number_of_episodes"]):
->>>>>>> 9a9584d5b882c37a8a1f971e9d27d7084b05efaf
         env.new_game()
         path = []
         print(f"Playing episode number {episode+1}")
@@ -74,7 +72,7 @@ def main():
 
         remaining_pegs.append(env.board.count_pieces())
 
-    #env.board.show_gameplay()
+    # env.board.show_gameplay()
     plot_learning(remaining_pegs)
 
     env.new_game()
