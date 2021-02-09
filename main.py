@@ -1,6 +1,24 @@
 from critic_dict import CriticDict
 from actor import Actor
 from simworld import Environment
+<<<<<<< HEAD
+=======
+from math import exp
+
+
+
+def play(env, actor):
+    """
+    Plays a single game within the environment, used for playing final game after learning phase
+    """
+    while not env.game_is_finished():
+        current_state = env.get_state()
+        legal_actions = env.get_actions()
+        action = actor.get_action(current_state, legal_actions)
+        print(f"Value of state action pair \n{current_state} \n{action}: {actor.get_policy(current_state, action)}")
+        env.perform_action(action)
+    return env
+>>>>>>> 9a9584d5b882c37a8a1f971e9d27d7084b05efaf
 
 
 def main():

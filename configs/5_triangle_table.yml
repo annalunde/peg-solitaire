@@ -1,0 +1,52 @@
+Critic_table:
+  #Learning rate
+  learning_rate: 0.01
+
+  #Discount Factor
+  discount_factor: 0.9
+
+  #Eligibility decay
+  eli_decay: 0.85
+
+Actor:
+  #Learning rate
+  learning_rate: 0.7
+
+  #Discount Factor
+  discount_factor: 0.9
+
+  #Eligibility decay
+  eli_decay: 0.85
+
+  #Epsilon
+  epsilon: 0.8
+
+  #Epsilon decay
+  epsilon_decay: 0.99999
+
+Environment:
+
+  #Boardsize
+  boardsize: 5
+
+  #Boardtype
+  board_type: "Triangle"
+
+  #Open cells
+  open_cells: [!!python/tuple [2,1]]
+
+  #Track history
+  track_history: True
+
+  #Step reward
+  step_reward: 1
+
+  #Final reward
+  final_reward: 50
+
+  #Loser penalty
+  loser_penalty: -1000
+
+Training:
+  #Number of training episodes
+  number_of_episodes: 1000
