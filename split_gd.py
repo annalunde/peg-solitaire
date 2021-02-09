@@ -26,9 +26,12 @@ class SplitGD:
         self.td_error = td_error
         self.eligs = {}
 
+    def update_td_error(self, td_err):
+        self.td_error = td_err
+
     # Subclass this with something useful.
     def modify_gradients(self, tape):
-        gradients = tape*(1/(-2*td_error))
+        gradients = tape*(1/(-2*self.td_error))
 
         # udpate eligs
         self.eligs += gradients

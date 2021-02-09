@@ -11,8 +11,7 @@ class CriticDict:
         self.eli_decay = eli_decay
         self.discount_factor = discount_factor
 
-        # Computes TD error from formula: r + discount_factor*V(s') - V(s)
-
+    # Computes TD error from formula: r + discount_factor*V(s') - V(s)
     def compute_td_err(self, current_state, next_state,
                        reward):  # Skal reward tas inn her, eller skal det tas inn ved initialisering?
         return reward + self.discount_factor * self.get_value(next_state) - self.get_value(current_state)

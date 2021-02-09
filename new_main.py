@@ -4,13 +4,13 @@ from simworld import Environment
 
 
 def main():
-    env = Environment(step_reward=0, final_reward=1, loser_penalty=0, boardsize=5, open_cells=[(0, 0)],
-                      board_type="Triangle", track_history=True)
+    env = Environment(step_reward=0, final_reward=1, loser_penalty=0, boardsize=4, open_cells=[(2, 1)],
+                      board_type="Diamond", track_history=True)
     critic = CriticDict(learning_rate=0.9, eli_decay=0.9, discount_factor=0.9)
     actor = Actor(learning_rate=0.9, discount_factor=0.9,
                   eli_decay=0.9, epsilon=0.1)
 
-    for episode in range(10000):
+    for episode in range(1000):
         env.new_game()
         path = []
         print(f"Playing episode number {episode+1}")
@@ -29,7 +29,7 @@ def main():
             critic.update_eli_dict(str(current_state), 0)
             actor.update_eli_dict(str(current_state), str(action), 0)
 
-            # UPDATE ELIG FIRST, THEN DECAYE
+            # UPDATE ELIG FIRST, THEN DECAY
             for i, sap in enumerate(reversed(path)):
                 critic.update_value_dict(str(sap[0]), td_err)
                 critic.update_eli_dict(str(sap[0]), 1)

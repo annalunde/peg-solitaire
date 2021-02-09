@@ -4,51 +4,78 @@ import random
 
 class Actor:
 
-    def __init__(self, learning_rate, discount_factor, eli_decay, epsilon=None):
-        self.epsilon = epsilon if epsilon else 0
+    def __init__(self, learning_rate, discount_factor, eli_decay, epsilon):
+        self.epsilon = epsilon
         self.policy_dict = defaultdict(lambda: 0)
-        self.eli_dict = defaultdict(lambda: 0)
+        self.eli_dict = {}  # defaultdict(lambda: 0)
         self.discount_factor = discount_factor
         self.eli_decay = eli_decay
         self.learning_rate = learning_rate
 
-    # Updates policy using: current_policy + learning_rate*td_err*eli_dict[state,action]
     def update_policy_dict(self, state, action, td_err):
-        self.policy_dict[(str(state), str(action))] += self.learning_rate * td_err * self.eli_dict[
-            (str(state), str(action))]
+        if (str(state), str(action)) in self.policy_dict.keys():
+            self.policy_dict[(str(state), str(action))] += self.learning_rate * \
+                td_err * self.get_elig(str(state), str(action))
+        else:
+            self.policy_dict[(str(state), str(action))] = self.learning_rate * \
+                td_err * self.get_elig(state, action)
 
     # Updates eligibility using: discount_factor*eli_decay*eli_dict[state,action]
+
     def update_eli_dict(self, state, action, i):
+        """
+        Updates eligibility using: discount_factor*eli_decay*eli_dict[state,action]
+        """
         if i == 0:
             self.eli_dict[(str(state), str(action))] = 1
+            return
         else:
-            self.eli_dict[(str(state), str(action))] = self.discount_factor * self.eli_decay * self.eli_dict[
-                (str(state), str(action))]
+            value = self.get_elig(state, action) * \
+                self.discount_factor * self.eli_decay
+            element = {(str(state), str(action)): value}
+            self.eli_dict.update(element)
+            # self.eli_dict[(str(state), str(action))] = self.discount_factor * \
+            #self.eli_decay * self.eli_dict[(str(state), str(action))]
 
-    def get_policy(self, state, action, length):
+    def get_elig(self, state, action):
+        if (str(state), str(action)) in self.eli_dict.keys():
+            return self.eli_dict[(str(state), str(action))]
+        else:
+            return 0
+
+    def get_policy(self, state, action):
+        """
+        Updates eligibility using: discount_factor*eli_decay*eli_dict[state,action]
+        """
         if (str(state), str(action)) in self.policy_dict.keys():
             return self.policy_dict[(str(state), str(action))]
         else:
-            return random.choice([i for i in range(length)])
+            return 0
 
     def reset_eli_dict(self):
-        self.eli_dict = defaultdict(lambda: 0)
+        self.eli_dict = {}  # defaultdict(lambda: 0)
 
     def get_action(self, state, legal_actions):
+        """
+        Returns action recommended by current policy, with the exception of random exploration epsilon percent of the time
+        """
         self.epsilon = self.epsilon*0.9999
         if random.uniform(0, 1) >= self.epsilon:
-            return max(legal_actions, key=lambda action: self.get_policy(state, action, length=len(legal_actions)))
+            return max(legal_actions, key=lambda action: self.get_policy(state, action))
         return random.choice(legal_actions)
 
 
-# actor = Actor(0.2, 0.2, 0.2)
+#actor = Actor(1, 1, 1, 1,0.999)
+
+
+# actor.update_eli_dict([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [(2, 2), (2, 2)], 0)
+# actor.update_eli_dict([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [(1, 1), (0, 0)], 0)
 #
-# actor.update_eli_dict([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [(2, 3), (2, 1)], 0)
-#
-# actor.update_policy_dict([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [(2, 3), (2, 1)], 0.3)
+# actor.update_policy_dict([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [(2, 2), (2, 2)], 0.6)
+# actor.update_policy_dict([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [(1, 1), (0, 0)], 0.3)
 # print(actor.policy_dict)
-# print(actor.get_policy([[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]], [(2, 3), (2, 1)]))
-# print(actor.get_action([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [[(2, 1), (1, 1)], [(2, 3), (2, 1)]]))
+# print(actor.get_policy([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [(2, 2), (2, 2)]))
+# print(actor.get_action([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [[(2, 2), (2, 2)], [(1, 1), (0, 0)]]))
 
 # main
 
