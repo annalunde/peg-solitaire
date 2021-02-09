@@ -1,11 +1,13 @@
 import random
 from collections import defaultdict
 
+
 class Actor:
     """
     The actor class keeps track of the policy to be used when deciding next move.
     Uses dictionaries to keep track of the value of each SAP pair and eligibility.
     """
+
     def __init__(self, learning_rate, discount_factor, eli_decay, epsilon, epsilon_decay):
         """
         Initializes an actor using a default value of 0 to allow accumulated values.

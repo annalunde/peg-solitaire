@@ -4,6 +4,7 @@ from simworld import Environment
 import yaml
 import matplotlib.pyplot as plt
 import time
+from copy import deepcopy
 
 config = yaml.full_load(open("aiprog/configs/5_triangle_table.yml"))
 env_cfg = config["Environment"]
@@ -51,7 +52,7 @@ def main():
         critic.reset_eli_dict()
         actor.reset_eli_dict()
         while not env.game_is_finished():
-            current_state = str(env.get_state())
+            current_state = deepcopy(env.get_state())
             legal_actions = env.get_actions()
             action = actor.get_action(current_state, legal_actions)
             path.append((str(current_state), str(action)))
@@ -80,7 +81,6 @@ def main():
     #print(f"Actor final epsilon: {actor.epsilon}")
     actor.epsilon = 0
     print("Attempting final gameplay to show you how smart I am now")
-    # print(actor.policy_dict)
     while not env.game_is_finished():
         current_state = env.get_state()
         legal_actions = env.get_actions()

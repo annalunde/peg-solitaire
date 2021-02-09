@@ -26,6 +26,13 @@ class SplitGD:
         self.td_error = td_error
         self.eligs = {}
 
+    def update_eli_dict(self, state, i):
+        if i == 0:
+            self.eligs[str(state)] = 1
+        else:
+            self.eligs[str(state)] = self.gamma * \
+                self.eli_decay*self.eligs[str(state)]
+
     def update_td_error(self, td_err):
         self.td_error = td_err
 
@@ -43,6 +50,7 @@ class SplitGD:
     # value of a tensor.
     def gen_loss(self, features, targets, avg=False):
         # Feed-forward pass to produce outputs/predictions
+        print("Feats", features)
         predictions = self.model(features)
         # model.loss = the loss function
         loss = self.model.loss(targets, predictions)
