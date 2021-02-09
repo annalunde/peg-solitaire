@@ -2,13 +2,19 @@ from critic_dict import CriticDict
 from actor import Actor
 from simworld import Environment
 import yaml
-from math import exp
-config = yaml.full_load(open("configs/config_default.yml"))
+import matplotlib.pyplot as plt
+import time
+
+config = yaml.full_load(open("configs/5_triangle_table.yml"))
 env_cfg = config["Environment"]
 actor_cfg = config["Actor"]
 critic_cfg = config["Critic_table"]
 training_cfg = config["Training"]
 
+def plot_learning(remaining_pegs):
+    episode = [i for i in range(len(remaining_pegs))]
+    plt.plot(episode, remaining_pegs)
+    plt.show()
 
 def main():
     """
@@ -34,6 +40,7 @@ def main():
                   eli_decay=actor_cfg["eli_decay"],
                   epsilon=actor_cfg["epsilon"],
                   epsilon_decay=actor_cfg["epsilon_decay"])
+    remaining_pegs = []
 
     for episode in range(training_cfg["number_of_episodes"]):
         env.new_game()
@@ -61,11 +68,14 @@ def main():
                 actor.update_policy_dict(str(sap[0]), str(sap[1]), td_err)
                 actor.update_eli_dict(str(sap[0]), str(sap[1]), 1)
 
-    env.board.show_gameplay()
+        remaining_pegs.append(env.board.count_pieces())
+
+    #env.board.show_gameplay()
+    plot_learning(remaining_pegs)
 
     env.new_game()
 
-    print(f"Actor final epsilon: {actor.epsilon}")
+    #print(f"Actor final epsilon: {actor.epsilon}")
     actor.epsilon = 0
     print("Attempting final gameplay to show you how smart I am now")
     # print(actor.policy_dict)
@@ -74,7 +84,7 @@ def main():
         legal_actions = env.get_actions()
         action = actor.get_action(current_state, legal_actions)
         env.perform_action(action)
-    env.board.visualize(2)
+    env.board.visualize(0.1)
 
 
 main()

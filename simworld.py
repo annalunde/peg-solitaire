@@ -179,6 +179,7 @@ class Board:
                 graph.add_edge(n, neighbor)
 
         # Start visualization process
+        plt.switch_backend(newbackend="macosx")
         plt.show()
         for action, board_state in self.history:
 
