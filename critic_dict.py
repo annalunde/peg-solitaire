@@ -7,6 +7,7 @@ class CriticDict:
     """
     CriticDict keeps track of the value and eligibility of each state using dictionaries.
     """
+
     def __init__(self, learning_rate, eli_decay, discount_factor):
         """
         Initializes a CriticDict using a default value of 0 to allow accumulated values.
@@ -31,6 +32,7 @@ class CriticDict:
         return reward + self.discount_factor * self.get_value(next_state) - self.get_value(current_state)
 
     # Updates dictionary with the formula: V(S) = V(s) + learning_rate*td_err*eligibility
+    # Oppdater for å ta inn SAP om nødvendig?
     def update_value_dict(self, state, td_err):
         """
         Updates value_dict using the formula: V(S) = V(s) + learning_rate*td_err*eligibility
@@ -44,6 +46,7 @@ class CriticDict:
             self.value_dict[str(state)] = self.learning_rate * \
                 td_err * self.eli_dict[str(state)]
 
+    # Updates eligibility dictionary using replacing traces: 1 if S = St, discount_factor*eli_decay*eli_dict[state]
     def update_eli_dict(self, state, i):  # i is index of state in history
         """
         Updates eligibility dictionary using replacing traces: 1 if S = St (that is, i=0),
@@ -57,6 +60,7 @@ class CriticDict:
             self.eli_dict[str(state)] = self.discount_factor * \
                 self.eli_decay * self.eli_dict[str(state)]
 
+    # Return value for given state
     def get_value(self, state):
         """
         Return value for given state
@@ -66,10 +70,8 @@ class CriticDict:
         if str(state) in self.value_dict.keys():
             return self.value_dict[str(state)]
         else:
-            return random.uniform(0, 1)
+            return random.randint(0, 1)
 
+    # Reset eli_dict after episode ends
     def reset_eli_dict(self):
-        """
-        Reset eli_dict after episode ends
-        """
-        self.eli_dict = defaultdict(lambda: 0)
+        self.eli_dict = {}

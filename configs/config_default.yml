@@ -19,18 +19,21 @@ Actor:
   eli_decay: 0.9
 
   #Epsilon
-  epsilon: 0.1
+  epsilon: 0.7
+
+  #Epsilon decay
+  epsilon_decay: 0.99999
 
 Environment:
 
   #Boardsize
-  boardsize: 4
+  boardsize: 5
 
   #Boardtype
-  board_type: "Diamond"
+  board_type: "Triangle"
 
   #Open cells
-  open_cells: [!!python/tuple [1,2]]
+  open_cells: [!!python/tuple [2,1]]
 
   #Track history
   track_history: True
