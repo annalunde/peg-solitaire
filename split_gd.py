@@ -38,7 +38,13 @@ class SplitGD:
 
     # Subclass this with something useful.
     def modify_gradients(self, tape):
-        gradients = tape*(1/(-2*self.td_error))
+        print("TAPE", tape)
+        print("TD ERR", self.td_error)
+        err = (1/(-2*self.td_error))
+        for c, t in enumerate(tape):
+            tape[c] = tape*err
+
+        gradients = tape
 
         # udpate eligs
         self.eligs += gradients
@@ -50,26 +56,33 @@ class SplitGD:
     # value of a tensor.
     def gen_loss(self, features, targets, avg=False):
         # Feed-forward pass to produce outputs/predictions
+        print(self.model.summary())
         print("Feats", features)
         predictions = self.model(features)
+        print("PREDSSSSSSS", predictions)
         # model.loss = the loss function
         loss = self.model.loss(targets, predictions)
         return tf.reduce_mean(loss).numpy() if avg else loss
 
-    def fit(self, features, targets, epochs=1, mbs=1, vfrac=0.1, verbosity=1, callbacks=[]):
+    def fit(self, features, targets, epochs=2, mbs=1, vfrac=0.1, verbosity=1, callbacks=[]):
+        print("Feats", features)
         params = self.model.trainable_weights
         train_ins, train_targs, val_ins, val_targs = split_training_data(
             features, targets, vfrac=vfrac)
+        print("train_ins", train_ins)
         for cb in callbacks:
             cb.on_train_begin()
         for epoch in range(epochs):
             for cb in callbacks:
                 cb.on_epoch_begin(epoch)
             for _ in range(math.floor(len(train_ins) / mbs)):
-                with tf.GradientTape() as tape:  # Read up on tf.GradientTape !!
+                print("enter")
+                with tf.GradientTape() as tape:
                     feaset, tarset = gen_random_minibatch(
                         train_ins, train_targs, mbs=mbs)
                     loss = self.gen_loss(feaset, tarset, avg=False)
+                    print("LOSS", loss)
+                    print("params", params)
                     gradients = tape.gradient(loss, params)
                     gradients = self.modify_gradients(gradients)
                     self.model.optimizer.apply_gradients(

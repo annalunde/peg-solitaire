@@ -22,9 +22,13 @@ class CriticNN:
         x_train = []
         y_train = []
         for i in reversed(cases):
-            x_train.append(self.convert_state(i))
+            tensor_x = tf.convert_to_tensor(self.convert_state(i))
+            x_train.append(tensor_x)
         for j in reversed(targets):
-            y_train.append(j)
+            tensor_y = tf.convert_to_tensor([j], dtype=tf.float32)
+            y_train.append(tensor_y)
+        x_train = np.array(x_train)
+        y_train = np.array(y_train)
         self.model = self.splitGD.fit(x_train, y_train)
 
     def compute_target(self, reward, s_prime):
@@ -38,10 +42,8 @@ class CriticNN:
     def compute_td_err(self, state, state_prime, reward):
         if state_prime not in self.studied:
             self.studied.append(state_prime)
-            print(state)
             s = self.convert_state(state)
             preds = self.model.predict(s)[0][0]
-            print("PREDICTED", preds)
             return reward + self.gamma*random.uniform(0, 1) - preds
         else:
             s = self.convert_state(state)
@@ -55,6 +57,7 @@ class CriticNN:
         model = keras.models.Sequential()
         opt = eval('keras.optimizers.' + opt)
         loss = eval('tf.keras.losses.' + loss)
+        model.add(tf.keras.Input(shape=(None, 1)))
         for layer in range(len(dims)-1):
             model.add(keras.layers.Dense(
                 dims[layer], activation=activation))

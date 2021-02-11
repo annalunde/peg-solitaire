@@ -10,7 +10,7 @@ def main():
                       board_type="Diamond", track_history=False)
     actor = Actor(learning_rate=0.9, discount_factor=0.9,
                   epsilon_decay=0.9, epsilon=0.1, eli_decay=0.8)
-    critic = CriticNN(dims=(16, 14, 3, 1), alpha=0.73,
+    critic = CriticNN(dims=(16, 3, 1), alpha=0.73,
                       eli_decay=0.9, gamma=0.8, shape="Diamond", size=4)
 
     for episode in range(1000):
@@ -35,9 +35,9 @@ def main():
 
             cases.append(current_state)
             targets.append(critic.compute_target(reward, env.get_state()))
-            critic.train(cases, targets)
-
-            critic.update_eli_dict(str(current_state), 0)
+            if len(cases) >= 10:
+                critic.train(cases, targets)
+            #critic.update_eli_dict(str(current_state), 0)
             actor.update_eli_dict(str(current_state), str(action), 0)
 
             for i, sap in enumerate(reversed(path)):
