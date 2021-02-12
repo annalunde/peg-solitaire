@@ -62,5 +62,4 @@ def main():
         env.perform_action(action)
     env.board.visualize(0.3)
 
-
 main()

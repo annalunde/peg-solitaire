@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import time
 from copy import deepcopy
 
-config = yaml.full_load(open("aiprog/configs/5_triangle_table.yml"))
+config = yaml.full_load(open("configs/config_default.yml"))
 env_cfg = config["Environment"]
 actor_cfg = config["Actor"]
 critic_cfg = config["Critic_table"]
@@ -86,7 +86,6 @@ def main():
         legal_actions = env.get_actions()
         action = actor.get_action(current_state, legal_actions)
         env.perform_action(action)
-    env.board.visualize(0.3)
-
+    env.board.visualize(0.5)
 
 main()

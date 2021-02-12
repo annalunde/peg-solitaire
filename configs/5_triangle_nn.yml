@@ -1,28 +1,28 @@
 Critic_table:
-  #Learning rate -
-  learning_rate: 0.9
+  #Learning rate
+  learning_rate: 0.01
 
   #Discount Factor
   discount_factor: 0.9
 
   #Eligibility decay
-  eli_decay: 0.9
+  eli_decay: 0.85
 
 Actor:
   #Learning rate
-  learning_rate: 0.9
+  learning_rate: 0.7
 
   #Discount Factor
   discount_factor: 0.9
 
   #Eligibility decay
-  eli_decay: 0.9
+  eli_decay: 0.85
 
   #Epsilon
-  epsilon: 0.7
+  epsilon: 0.8
 
   #Epsilon decay
-  epsilon_decay: 0.99999
+  epsilon_decay: 0.9956275604353287
 
 Environment:
 
@@ -39,13 +39,13 @@ Environment:
   track_history: True
 
   #Step reward
-  step_reward: 0
+  step_reward: 1
 
   #Final reward
-  final_reward: 1
+  final_reward: 2
 
   #Loser penalty
-  loser_penalty: 0
+  loser_penalty: -1
 
 Training:
   #Number of training episodes

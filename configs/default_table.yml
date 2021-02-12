@@ -16,7 +16,7 @@ Actor:
   discount_factor: 0.9
 
   #Eligibility decay
-  eli_decay: 0.85
+  eli_decay: 0.1
 
   #Epsilon
   epsilon: 0.8
@@ -24,16 +24,19 @@ Actor:
   #Epsilon decay
   epsilon_decay: 0.9956275604353287
 
+
 Environment:
 
   #Boardsize
-  boardsize: 5
+  boardsize: 6
 
   #Boardtype
-  board_type: "Triangle"
+  board_type: "Diamond"
 
   #Open cells
-  open_cells: [!!python/tuple [2,1]]
+  open_cells: [!!python/tuple [1,1]]
+  #Solvable (1,2),(2,1)
+  #Not solvable (1,1),(2,2)
 
   #Track history
   track_history: True
@@ -48,5 +51,5 @@ Environment:
   loser_penalty: -1
 
 Training:
-  #Number of training episodes
+  #Number of episodes
   number_of_episodes: 1000

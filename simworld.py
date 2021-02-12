@@ -187,6 +187,11 @@ class Board:
             clearLabels = {}
             nodeFilled = []
             nodeClear = []
+            moved_node = []
+            if action == None:
+                continue
+            else:
+                moved_node.append(action[1])
 
             for n in graph.nodes:
                 row, col = n[0], n[1]
@@ -196,9 +201,13 @@ class Board:
                 else:
                     clearLabels[n] = n
                     nodeClear.append(n)
+            print(nodeFilled)
 
             # Draw filled nodes
             nx.draw(graph, pos=pos_dict, nodelist=nodeFilled, node_color='black', edgecolors='black', node_size=1000)
+
+            #Draw moved node
+            nx.draw(graph, pos=pos_dict, nodelist=moved_node, node_color='blue', edgecolors='black', node_size=1000)
 
             # Draw labels for filled nodes
             nx.draw_networkx_labels(graph, pos_dict, filledLabels, font_size=11, font_color='white')
@@ -208,6 +217,8 @@ class Board:
 
             # Draw labels for clear nodes
             nx.draw_networkx_labels(graph, pos_dict, clearLabels, font_size=11, font_color='black')
+
+            #nx.draw_networkx_edges(pos = pos_dict, )
 
             plt.pause(frame_interval)
 
