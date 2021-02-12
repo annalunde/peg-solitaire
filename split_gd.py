@@ -31,13 +31,9 @@ class SplitGD:
         self.alpha = alpha
         self.eli_decay = eli_decay
 
-    def update_eli_dict(self, i):
-        if i == 0:
-            return
-        else:
-            for i in range(len(self.eligs)):
-                self.eligs[i] = self.gamma * \
-                    self.eli_decay*self.eligs[i]
+    def decay_eligibilites(self):
+        for i in range(len(self.eligs)):
+            self.eligs[i] = self.gamma * self.eli_decay * self.eligs[i]
 
     def update_td_error(self, td_err):
         self.td_error = td_err
@@ -47,65 +43,59 @@ class SplitGD:
 
     # Subclass this with something useful.
     def modify_gradients(self, tape, td_error):
-        print("="*100)
-        err = (-1*(td_error))
-        for weight_id, weight in enumerate(tape):
-            self.eligs[weight_id] += weight  # Eligibility update (dependent on gradient value)
-            # RETURN NEW "TAPE" GRADIENT CONSISTING OF elig[weight_id]*td_error
-            tape[weight_id] = weight + td_error * self.eligs[weight_id]*self.alpha
-        #print("TAPE2", tape)
+        print("=" * 100)
+        err = (-1 * (td_error))
+        elig_id = 0
+        # Tape contains tensors of either two or one dimension, need to keep shape intact:
+        print(tape[0][0][0])
+        for tens in tape:
+
+            tens_np = tens.numpy()
+
+            for i, element in enumerate(tens_np):
+                if not hasattr(element, '__iter__'):
+                    self.eligs[elig_id] += element
+                    tens_np[[i]] = td_error * self.eligs[elig_id]
+                    elig_id += 1
+                else:
+                    for j, subelement in enumerate(element):
+                        self.eligs[elig_id] += subelement
+                        tens_np[[i], [j]] = td_error * self.eligs[elig_id]
+                        elig_id += 1
+
         return tape
 
     # This returns a tensor of losses, OR the value of the averaged tensor.  Note: use .numpy() to get the
     # value of a tensor.
 
-    def gen_loss(self, features, targets, avg=False):
-        # Feed-forward pass to produce outputs/predictions
-        #print("Feats", features)
-        predictions = self.model(features)
-        #print("PREDSSSSSSS", predictions)
-        # model.loss = the loss function
-        loss = self.model.loss(targets, predictions)
-        return tf.reduce_mean(loss).numpy() if avg else loss
+    # def gen_loss(self, features, targets, avg=False):
+    #     # Feed-forward pass to produce outputs/predictions
+    #     #print("Feats", features)
+    #     predictions = self.model(features)
+    #     #print("PREDSSSSSSS", predictions)
+    #     # model.loss = the loss function
+    #     loss = self.model.loss(targets, predictions)
+    #     return tf.reduce_mean(loss).numpy() if avg else loss
 
-    def fit(self, features, td_error, epochs=2, mbs=1, vfrac=0.1, verbosity=1, callbacks=[]):
-        #print("Feats", features)
-        #print("targs", targets)
+    def fit(self, feature, td_error, epochs=2, mbs=1, vfrac=0.1, verbosity=1, callbacks=[]):
+
         params = self.model.trainable_weights
-        # train_ins, train_targs, val_ins, val_targs = split_training_data(
-        #    features, targets, vfrac=vfrac)
-        #print("train_ins", train_ins)
         for cb in callbacks:
             cb.on_train_begin()
         for epoch in range(epochs):
             for cb in callbacks:
                 cb.on_epoch_begin(epoch)
-            # for _ in range(math.floor(len(train_ins) / mbs)):
             for _ in range(1):
-                # print("enter")
-
                 with tf.GradientTape() as tape:
-
-                    # feaset, tarset = gen_random_minibatch(
-                    #    train_ins, train_targs, mbs=mbs)
-                    #loss = self.gen_loss(feaset, tarset, avg=False)
-
-                    print("feature", features)
-                    #print("tragets", targets)
-                    #loss = self.gen_loss(features, targets, avg=False)
-                    #print("LOSS", loss)
-                    predictions = self.model(features)
+                    prediction = self.model(feature)
                     gradients = tape.gradient(
-                        predictions, params)
-                    print("gradients before", gradients)  # loss = predictions
+                        prediction, params)
                     gradients = self.modify_gradients(gradients, td_error)
-                    print("gradients", gradients)
-                    print("params", params)
                     self.model.optimizer.apply_gradients(
                         zip(gradients, params))
             # if verbosity > 0:
-                # self.end_of_epoch_action(train_ins, train_targs, val_ins, val_targs, epoch,
-                    #  verbosity=verbosity, callbacks=callbacks)
+            # self.end_of_epoch_action(train_ins, train_targs, val_ins, val_targs, epoch,
+            #  verbosity=verbosity, callbacks=callbacks)
         for cb in callbacks:
             cb.on_train_end()
 
@@ -153,6 +143,7 @@ def gen_random_minibatch(inputs, targets, mbs=1):
     indices = np.random.randint(len(inputs), size=mbs)
     return inputs[indices], targets[indices]
 
+
 # This returns: train_features, train_targets, validation_features, validation_targets
 
 
@@ -165,9 +156,9 @@ def split_training_data(inputs, targets, vfrac=0.1, mix=True):
             np.random.shuffle(pairs)
         vcases = pairs[0:vc]
         tcases = pairs[vc:]
-        return np.array([tc[0] for tc in tcases]), np.array([tc[1] for tc in tcases]),\
-            np.array([vc[0] for vc in vcases]), np.array([vc[1]
-                                                          for vc in vcases])
+        return np.array([tc[0] for tc in tcases]), np.array([tc[1] for tc in tcases]), \
+               np.array([vc[0] for vc in vcases]), np.array([vc[1]
+                                                             for vc in vcases])
         #  return tcases[:,0], tcases[:,1], vcases[:,0], vcases[:,1]  # Can't get this to work properly
     else:
         return inputs, targets, [], []

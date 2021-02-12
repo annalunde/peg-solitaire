@@ -15,7 +15,7 @@ class CriticNN:
         self.model = self.gennet(dims, alpha)
         self.splitGD = SplitGD(self.model, 0, self.alpha,
                                self.gamma, self.eli_decay)
-        self.studied = set()
+        self.studied = []
 
     def train(self, state, td_error):
         # for i in reversed(cases):
@@ -28,10 +28,9 @@ class CriticNN:
         # x_train = np.array(self.convert_state_to_tensor(cases))
 
         x_train = self.convert_state_to_tensor(state)
-        #tensor = np.array(tf.convert_to_tensor([target], dtype=tf.float32))
-        error = tf.reshape(td_error, [1, 1])
+        td_error_tensor = tf.reshape(td_error, [1, 1])
         #print("y_train", error2)
-        self.model = self.splitGD.fit(x_train, error)
+        self.model = self.splitGD.fit(feature=x_train, td_error=td_error_tensor)
 
     # def compute_target(self, reward, s_prime):
     #     if s_prime not in self.studied:
@@ -43,7 +42,7 @@ class CriticNN:
 
     def compute_td_err(self, state, state_prime, reward):
         if state not in self.studied:
-            self.studied.add(state)
+            self.studied.append(state)
             state_value = random.uniform(0, 1)
         else:
             s = self.convert_state_to_tensor(state)
@@ -65,7 +64,7 @@ class CriticNN:
         model = keras.models.Sequential()
         opt = eval('keras.optimizers.' + opt)
         loss = eval('tf.keras.losses.' + loss)
-        model.add(keras.layers.Dense(input_shape=None,  # Determines shape after first input of a board state
+        model.add(keras.layers.Dense(input_shape=(dims[0],),  # Determines shape after first input of a board state
                                      units=dims[0], activation=activation))
         for layer in range(1, len(dims)-1):
             model.add(keras.layers.Dense(

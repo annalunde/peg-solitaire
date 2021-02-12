@@ -22,25 +22,24 @@ def main():
         critic.splitGD.reset_eli_dict()
         actor.reset_eli_dict()
         while not env.game_is_finished():
-            current_state = deepcopy(env.get_state())
+            state = deepcopy(env.get_state())
             legal_actions = env.get_actions()
-            action = actor.get_action(current_state, legal_actions)
-            path.append((str(current_state), str(action)))
-            reward = env.perform_action(action)
+            action = actor.get_action(state=state, legal_actions=legal_actions)
+            path.append((str(state), str(action)))
+            reward = env.perform_action(action=action)
 
-            td_err = critic.compute_td_err(
-                current_state, env.get_state(), reward)
+            td_err = critic.compute_td_err(state=state, state_prime=env.get_state(), reward=reward)
             # critic.splitGD.update_td_error(td_err)
             #print("td_err", td_err)
 
-            critic.splitGD.update_eli_dict(0)
-            actor.update_eli_dict(str(current_state), str(action), 0)
+            #critic.splitGD.update_eli_dict()
+            actor.update_eli_dict(str(state), str(action), 0)
             #target = critic.compute_target(reward, env.get_state())
             #print("target", target)
             # cases.append(current_state)
             # for state in reversed(cases):
-            critic.train(current_state, td_err)
-            critic.splitGD.update_eli_dict(1)
+            critic.train(state, td_err)
+            critic.splitGD.decay_eligibilites()
 
             for i, sap in enumerate(reversed(path)):
                 actor.update_policy_dict(str(sap[0]), str(sap[1]), td_err)
