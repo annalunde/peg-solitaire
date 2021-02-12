@@ -21,9 +21,7 @@ def main():
         print(f"Playing episode number {episode+1}")
         critic.splitGD.reset_eli_dict()
         actor.reset_eli_dict()
-        lok = 0
         while not env.game_is_finished():
-            lok = lok + 1
             current_state = deepcopy(env.get_state())
             legal_actions = env.get_actions()
             action = actor.get_action(current_state, legal_actions)
@@ -32,17 +30,17 @@ def main():
 
             td_err = critic.compute_td_err(
                 current_state, env.get_state(), reward)
-            critic.splitGD.update_td_error(td_err)
+            # critic.splitGD.update_td_error(td_err)
             #print("td_err", td_err)
 
             critic.splitGD.update_eli_dict(0)
             actor.update_eli_dict(str(current_state), str(action), 0)
-            target = critic.compute_target(reward, env.get_state())
+            #target = critic.compute_target(reward, env.get_state())
             #print("target", target)
-            cases.append((current_state, target))
-            for (state, target) in reversed(cases):
-                critic.train(state, target)
-                critic.splitGD.update_eli_dict(1)
+            # cases.append(current_state)
+            # for state in reversed(cases):
+            critic.train(current_state, td_err)
+            critic.splitGD.update_eli_dict(1)
 
             for i, sap in enumerate(reversed(path)):
                 actor.update_policy_dict(str(sap[0]), str(sap[1]), td_err)

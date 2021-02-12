@@ -26,7 +26,7 @@ class SplitGD:
     def __init__(self, keras_model, td_error, alpha, gamma, eli_decay):
         self.model = keras_model
         self.td_error = td_error
-        self.eligs = {}
+        self.eligs = defaultdict(lambda: 0)
         self.gamma = gamma
         self.alpha = alpha
         self.eli_decay = eli_decay
@@ -46,11 +46,12 @@ class SplitGD:
         self.eligs = defaultdict(lambda: 0)
 
     # Subclass this with something useful.
-    def modify_gradients(self, tape):
-        err = (-1/(self.td_error))
+    def modify_gradients(self, tape, td_error):
+        print("tape", tape)
+        err = (-1*(td_error))
         for count, weight in enumerate(tape):
             self.eligs[count] += err
-            tape[count] = weight * self.td_error * self.eligs[count]*self.alpha
+            weight = weight + td_error * self.eligs[count]*self.alpha
         #print("TAPE2", tape)
         return tape
 
@@ -66,7 +67,7 @@ class SplitGD:
         loss = self.model.loss(targets, predictions)
         return tf.reduce_mean(loss).numpy() if avg else loss
 
-    def fit(self, features, targets, epochs=2, mbs=1, vfrac=0.1, verbosity=1, callbacks=[]):
+    def fit(self, features, td_error, epochs=2, mbs=1, vfrac=0.1, verbosity=1, callbacks=[]):
         #print("Feats", features)
         #print("targs", targets)
         params = self.model.trainable_weights
@@ -87,10 +88,18 @@ class SplitGD:
                     # feaset, tarset = gen_random_minibatch(
                     #    train_ins, train_targs, mbs=mbs)
                     #loss = self.gen_loss(feaset, tarset, avg=False)
-                    loss = self.gen_loss(features, targets, avg=False)
-                    print("LOSS", loss)
-                    gradients = tape.gradient(loss, params)
-                    gradients = self.modify_gradients(gradients)
+
+                    print("feature", features)
+                    #print("tragets", targets)
+                    #loss = self.gen_loss(features, targets, avg=False)
+                    #print("LOSS", loss)
+                    predictions = self.model(features)
+                    gradients = tape.gradient(
+                        predictions, params)
+                    print("gradients before", gradients)  # loss = predictions
+                    gradients = self.modify_gradients(gradients, td_error)
+                    print("gradients", gradients)
+                    print("params", params)
                     self.model.optimizer.apply_gradients(
                         zip(gradients, params))
             # if verbosity > 0:
