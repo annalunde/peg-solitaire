@@ -47,11 +47,12 @@ class SplitGD:
 
     # Subclass this with something useful.
     def modify_gradients(self, tape, td_error):
-        print("tape", tape)
+        print("="*100)
         err = (-1*(td_error))
-        for count, weight in enumerate(tape):
-            self.eligs[count] += err
-            weight = weight + td_error * self.eligs[count]*self.alpha
+        for weight_id, weight in enumerate(tape):
+            self.eligs[weight_id] += weight  # Eligibility update (dependent on gradient value)
+            # RETURN NEW "TAPE" GRADIENT CONSISTING OF elig[weight_id]*td_error
+            tape[weight_id] = weight + td_error * self.eligs[weight_id]*self.alpha
         #print("TAPE2", tape)
         return tape
 

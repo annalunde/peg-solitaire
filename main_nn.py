@@ -11,7 +11,7 @@ def main():
     actor = Actor(learning_rate=0.9, discount_factor=0.9,
                   epsilon_decay=0.995, epsilon=0.1, eli_decay=0.8)
     critic = CriticNN(dims=(16, 3, 1), alpha=0.73,
-                      eli_decay=0.9, gamma=0.8, shape="Diamond", size=4)
+                      eli_decay=0.9, gamma=0.8)
 
     for episode in range(1000):
         env.new_game()
