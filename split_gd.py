@@ -46,9 +46,8 @@ class SplitGD:
         # Tape contains tensors of either two or one dimension, need to keep shape intact:
         if len(self.eligs) == 0:
             self.eligs = tf.zeros(shape=np.shape(gradients), dtype=tf.float32)
-        print(self.eligs)
         self.eligs = np.add(self.eligs, gradients)
-        tape = np.multiply(self.eligs, td_error)
+        gradients = np.multiply(self.eligs, td_error[0][0])
         self.decay_eligibilites()
         return gradients
 

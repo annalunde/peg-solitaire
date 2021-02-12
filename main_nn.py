@@ -3,21 +3,26 @@ from actor import Actor
 from simworld import Environment
 from critic_nn import CriticNN
 from copy import deepcopy
+import matplotlib.pyplot as plt
 
+def plot_learning(remaining_pegs):
+    episode = [i for i in range(len(remaining_pegs))]
+    plt.plot(episode, remaining_pegs)
+    plt.show()
 
 def main():
-    env = Environment(step_reward=0, final_reward=1, loser_penalty=0, boardsize=4, open_cells=[(2, 1)],
+    env = Environment(step_reward=1, final_reward=50, loser_penalty=-100, boardsize=4, open_cells=[(2, 1)],
                       board_type="Diamond", track_history=False)
     actor = Actor(learning_rate=0.9, discount_factor=0.9,
-                  epsilon_decay=0.995, epsilon=0.1, eli_decay=0.8)
-    critic = CriticNN(dims=(16, 3, 1), alpha=0.73,
-                      eli_decay=0.9, gamma=0.8)
+                  epsilon_decay=0.99, epsilon=0.1, eli_decay=0.8)
+    critic = CriticNN(dims=(16, 3, 1), alpha=0.01,
+                      eli_decay=0.99, gamma=0.8)
 
-    for episode in range(1000):
+    remaining_pegs = []
+
+    for episode in range(100):
         env.new_game()
         path = []
-        cases = []
-        targets = []
         print(f"Playing episode number {episode+1}")
         critic.splitGD.reset_eli_dict()
         actor.reset_eli_dict()
@@ -44,10 +49,13 @@ def main():
             for i, sap in enumerate(reversed(path)):
                 actor.update_policy_dict(str(sap[0]), str(sap[1]), td_err)
                 actor.update_eli_dict(str(sap[0]), str(sap[1]), 1)
+        remaining_pegs.append(env.board.count_pieces())
 
-    env.board.show_gameplay()
 
-    env.new_game()
+    plot_learning(remaining_pegs)
+
+    env = Environment(step_reward=1, final_reward=50, loser_penalty=-100, boardsize=4, open_cells=[(2, 1)],
+                      board_type="Diamond", track_history=True)
 
     print(f"Actor final epsilon: {actor.epsilon}")
     actor.epsilon = 0
