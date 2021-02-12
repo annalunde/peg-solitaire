@@ -9,7 +9,7 @@ def main():
     env = Environment(step_reward=0, final_reward=1, loser_penalty=0, boardsize=4, open_cells=[(2, 1)],
                       board_type="Diamond", track_history=False)
     actor = Actor(learning_rate=0.9, discount_factor=0.9,
-                  epsilon_decay=0.9, epsilon=0.1, eli_decay=0.8)
+                  epsilon_decay=0.995, epsilon=0.1, eli_decay=0.8)
     critic = CriticNN(dims=(16, 3, 1), alpha=0.73,
                       eli_decay=0.9, gamma=0.8, shape="Diamond", size=4)
 
@@ -19,9 +19,11 @@ def main():
         cases = []
         targets = []
         print(f"Playing episode number {episode+1}")
-        # critic.reset_eli_dict()
+        critic.splitGD.reset_eli_dict()
         actor.reset_eli_dict()
+        lok = 0
         while not env.game_is_finished():
+            lok = lok + 1
             current_state = deepcopy(env.get_state())
             legal_actions = env.get_actions()
             action = actor.get_action(current_state, legal_actions)
@@ -31,14 +33,16 @@ def main():
             td_err = critic.compute_td_err(
                 current_state, env.get_state(), reward)
             critic.splitGD.update_td_error(td_err)
-            print("td_err", td_err)
+            #print("td_err", td_err)
 
-            cases.append(current_state)
-            targets.append(critic.compute_target(reward, env.get_state()))
-            if len(cases) >= 10:
-                critic.train(cases, targets)
-            #critic.update_eli_dict(str(current_state), 0)
+            critic.splitGD.update_eli_dict(0)
             actor.update_eli_dict(str(current_state), str(action), 0)
+            target = critic.compute_target(reward, env.get_state())
+            #print("target", target)
+            cases.append((current_state, target))
+            for (state, target) in reversed(cases):
+                critic.train(state, target)
+                critic.splitGD.update_eli_dict(1)
 
             for i, sap in enumerate(reversed(path)):
                 actor.update_policy_dict(str(sap[0]), str(sap[1]), td_err)
@@ -56,7 +60,7 @@ def main():
         legal_actions = env.get_actions()
         action = actor.get_action(current_state, legal_actions)
         env.perform_action(action)
-    env.board.show_gameplay()
+    env.board.visualize(0.3)
 
 
 main()

@@ -1,6 +1,8 @@
 import math
 import tensorflow as tf
 import numpy as np
+from collections import defaultdict
+
 
 # ************** Split Gradient Descent (SplitGD) **********************************
 # This "exposes" the gradients during gradient descent by breaking the call to "fit" into two calls: tape.gradient
@@ -21,75 +23,79 @@ import numpy as np
 
 class SplitGD:
 
-    def __init__(self, keras_model, td_error):
+    def __init__(self, keras_model, td_error, alpha, gamma, eli_decay):
         self.model = keras_model
         self.td_error = td_error
         self.eligs = {}
+        self.gamma = gamma
+        self.alpha = alpha
+        self.eli_decay = eli_decay
 
-    def update_eli_dict(self, state, i):
+    def update_eli_dict(self, i):
         if i == 0:
-            self.eligs[str(state)] = 1
+            return
         else:
-            self.eligs[str(state)] = self.gamma * \
-                self.eli_decay*self.eligs[str(state)]
+            for i in range(len(self.eligs)):
+                self.eligs[i] = self.gamma * \
+                    self.eli_decay*self.eligs[i]
 
     def update_td_error(self, td_err):
         self.td_error = td_err
 
+    def reset_eli_dict(self):
+        self.eligs = defaultdict(lambda: 0)
+
     # Subclass this with something useful.
     def modify_gradients(self, tape):
-        print("TAPE", tape)
-        print("TD ERR", self.td_error)
-        err = (1/(-2*self.td_error))
-        for c, t in enumerate(tape):
-            tape[c] = tape*err
-
-        gradients = tape
-
-        # udpate eligs
-        self.eligs += gradients
-
-        # final gradients = elig*td_error
-        return self.eligs * self.td_error
+        err = (-1/(self.td_error))
+        for count, weight in enumerate(tape):
+            self.eligs[count] += err
+            tape[count] = weight * self.td_error * self.eligs[count]*self.alpha
+        #print("TAPE2", tape)
+        return tape
 
     # This returns a tensor of losses, OR the value of the averaged tensor.  Note: use .numpy() to get the
     # value of a tensor.
+
     def gen_loss(self, features, targets, avg=False):
         # Feed-forward pass to produce outputs/predictions
-        print(self.model.summary())
-        print("Feats", features)
+        #print("Feats", features)
         predictions = self.model(features)
-        print("PREDSSSSSSS", predictions)
+        #print("PREDSSSSSSS", predictions)
         # model.loss = the loss function
         loss = self.model.loss(targets, predictions)
         return tf.reduce_mean(loss).numpy() if avg else loss
 
     def fit(self, features, targets, epochs=2, mbs=1, vfrac=0.1, verbosity=1, callbacks=[]):
-        print("Feats", features)
+        #print("Feats", features)
+        #print("targs", targets)
         params = self.model.trainable_weights
-        train_ins, train_targs, val_ins, val_targs = split_training_data(
-            features, targets, vfrac=vfrac)
-        print("train_ins", train_ins)
+        # train_ins, train_targs, val_ins, val_targs = split_training_data(
+        #    features, targets, vfrac=vfrac)
+        #print("train_ins", train_ins)
         for cb in callbacks:
             cb.on_train_begin()
         for epoch in range(epochs):
             for cb in callbacks:
                 cb.on_epoch_begin(epoch)
-            for _ in range(math.floor(len(train_ins) / mbs)):
-                print("enter")
+            # for _ in range(math.floor(len(train_ins) / mbs)):
+            for _ in range(1):
+                # print("enter")
+
                 with tf.GradientTape() as tape:
-                    feaset, tarset = gen_random_minibatch(
-                        train_ins, train_targs, mbs=mbs)
-                    loss = self.gen_loss(feaset, tarset, avg=False)
+
+                    # feaset, tarset = gen_random_minibatch(
+                    #    train_ins, train_targs, mbs=mbs)
+                    #loss = self.gen_loss(feaset, tarset, avg=False)
+                    loss = self.gen_loss(features, targets, avg=False)
                     print("LOSS", loss)
-                    print("params", params)
                     gradients = tape.gradient(loss, params)
                     gradients = self.modify_gradients(gradients)
                     self.model.optimizer.apply_gradients(
                         zip(gradients, params))
-            if verbosity > 0:
-                self.end_of_epoch_action(train_ins, train_targs, val_ins, val_targs, epoch,
-                                         verbosity=verbosity, callbacks=callbacks)
+            # if verbosity > 0:
+                # self.end_of_epoch_action(train_ins, train_targs, val_ins, val_targs, epoch,
+                    #  verbosity=verbosity, callbacks=callbacks)
         for cb in callbacks:
             cb.on_train_end()
 

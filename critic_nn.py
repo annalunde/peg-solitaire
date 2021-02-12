@@ -13,22 +13,26 @@ class CriticNN:
         self.eli_decay = eli_decay
         self.gamma = gamma
         self.model = self.gennet(dims, size, alpha)
-        self.splitGD = SplitGD(self.model, 0)
+        self.splitGD = SplitGD(self.model, 0, self.alpha,
+                               self.gamma, self.eli_decay)
         self.shape = shape
         self.size = size
         self.studied = []
 
     def train(self, cases, targets):
-        x_train = []
-        y_train = []
-        for i in reversed(cases):
-            tensor_x = tf.convert_to_tensor(self.convert_state(i))
-            x_train.append(tensor_x)
-        for j in reversed(targets):
-            tensor_y = tf.convert_to_tensor([j], dtype=tf.float32)
-            y_train.append(tensor_y)
-        x_train = np.array(x_train)
-        y_train = np.array(y_train)
+        # for i in reversed(cases):
+        # tensor_x = self.convert_state_to_tensor(i)
+        # x_train.append(tensor_x)
+        # for j in reversed(targets):
+        #  tensor_y = tf.convert_to_tensor([j], dtype=tf.float32)
+        # y_train.append(tensor_y)
+
+        # x_train = np.array(self.convert_state_to_tensor(cases))
+
+        x_train = self.convert_state_to_tensor(cases)
+        tensor = np.array(tf.convert_to_tensor([targets], dtype=tf.float32))
+        y_train = tf.reshape(tensor, [1, 1])
+        #print("y_train", y_train)
         self.model = self.splitGD.fit(x_train, y_train)
 
     def compute_target(self, reward, s_prime):
@@ -36,31 +40,39 @@ class CriticNN:
             self.studied.append(s_prime)
             return random.uniform(0, 1)
         else:
-            s_p = self.convert_state(s_prime)
-            return reward + self.gamma*self.model.predict(s_p)[0][0]
+            s_p = self.convert_state_to_tensor(s_prime)
+            return reward + self.gamma*self.splitGD.model.predict(s_p)[0][0]
 
     def compute_td_err(self, state, state_prime, reward):
-        if state_prime not in self.studied:
-            self.studied.append(state_prime)
-            s = self.convert_state(state)
-            preds = self.model.predict(s)[0][0]
-            return reward + self.gamma*random.uniform(0, 1) - preds
+        if state not in self.studied:
+            self.studied.append(state)
+            state_value = random.uniform(0, 1)
         else:
-            s = self.convert_state(state)
-            s_p = self.convert_state(state_prime)
-            return reward + self.gamma*self.model.predict(s_p) - self.model.predict(s)[0][0]
+            s = self.convert_state_to_tensor(state)
+            state_value = self.splitGD.model.predict(s)[0][0]
 
-    def convert_state(self, state):
-        return np.concatenate([np.array(i) for i in state])
+        if state_prime not in self.studied:
+            # self.studied.append(state_prime)
+            state_prime_value = random.uniform(0, 1)
+        else:
+            s_p = self.convert_state_to_tensor(state_prime)
+            state_prime_value = self.splitGD.model.predict(s_p)[0][0]
+        return reward + self.gamma*state_prime_value - state_value
 
-    def gennet(self, dims, size, alpha=0.01, opt='SGD', loss='MeanSquaredError()', activation="relu", last_activation="softmax"):
+    def convert_state_to_tensor(self, state):
+        tensor = tf.convert_to_tensor(
+            [np.concatenate([np.array(i) for i in state])])
+        return tf.reshape(tensor, [1, 16])
+
+    def gennet(self, dims, size, alpha=0.01, opt='SGD', loss='MeanSquaredError()', activation="relu", last_activation="relu"):
         model = keras.models.Sequential()
         opt = eval('keras.optimizers.' + opt)
         loss = eval('tf.keras.losses.' + loss)
-        model.add(tf.keras.Input(shape=(None, 1)))
-        for layer in range(len(dims)-1):
+        model.add(keras.layers.Dense(input_shape=(size**2,),
+                                     units=dims[0], activation=activation))
+        for layer in range(1, len(dims)-1):
             model.add(keras.layers.Dense(
-                dims[layer], activation=activation))
+                units=dims[layer], activation=activation))
         model.add(keras.layers.Dense(
             dims[-1], activation=last_activation))
         model.compile(optimizer=opt(lr=alpha), loss=loss)
