@@ -14,9 +14,9 @@ def main():
     env = Environment(step_reward=1, final_reward=50, loser_penalty=-100, boardsize=4, open_cells=[(2, 1)],
                       board_type="Diamond", track_history=False)
     actor = Actor(learning_rate=0.9, discount_factor=0.9,
-                  epsilon_decay=0.99, epsilon=0.1, eli_decay=0.8)
+                  epsilon_decay=0.995, epsilon=0.1, eli_decay=0.8)
     critic = CriticNN(dims=(16, 3, 1), alpha=0.01,
-                      eli_decay=0.99, gamma=0.8)
+                      eli_decay=0.995, gamma=0.8)
 
     remaining_pegs = []
 

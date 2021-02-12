@@ -23,19 +23,20 @@ class CriticNN:
         #print("y_train", error2)
         self.model = self.splitGD.fit(feature=x_train, td_error=td_error_tensor)
 
+
     def compute_td_err(self, state, state_prime, reward):
         if state not in self.studied:
             self.studied.append(state)
             state_value = random.uniform(0, 1)
         else:
             s = self.convert_state_to_tensor(state)
-            state_value = self.splitGD.model(s)[0][0]
+            state_value = self.splitGD.model.predict(s)[0][0]
 
         if state_prime not in self.studied:
             state_prime_value = random.uniform(0, 1)
         else:
             s_p = self.convert_state_to_tensor(state_prime)
-            state_prime_value = self.splitGD.model(s_p)[0][0]
+            state_prime_value = self.splitGD.model.predict(s_p)[0][0]
         return reward + self.gamma*state_prime_value - state_value
 
     def convert_state_to_tensor(self, state):
