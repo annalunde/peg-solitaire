@@ -26,51 +26,41 @@ class SplitGD:
     def __init__(self, keras_model, td_error, alpha, gamma, eli_decay):
         self.model = keras_model
         self.td_error = td_error
-        self.eligs = defaultdict(lambda: 0)
+        self.eligs = np.array([])
         self.gamma = gamma
         self.alpha = alpha
         self.eli_decay = eli_decay
 
     def decay_eligibilites(self):
-        for i in range(len(self.eligs)):
-            self.eligs[i] = self.gamma * self.eli_decay * self.eligs[i]
+        self.eligs = np.multiply(self.eligs, self.gamma * self.eli_decay)
 
     def update_td_error(self, td_err):
         self.td_error = td_err
 
     def reset_eli_dict(self):
-        self.eligs = defaultdict(lambda: 0)
+        self.eligs = np.array([])
 
     # Subclass this with something useful.
     def modify_gradients(self, tape, td_error):
-        elig_id = 0
+        td_error *= -1
+        tape = tf.clip_by_global_norm(tape, 10)[0]
         # Tape contains tensors of either two or one dimension, need to keep shape intact:
-        for tens in tape:
+        if len(self.eligs) == 0:
+            self.eligs = tf.zeros(shape=np.shape(tape), dtype=tf.float32)
 
-            tens_np = tens.numpy()
+        print(self.eligs)
+        self.eligs = np.add(self.eligs, tape)
 
-            for i, element in enumerate(tens_np):
-                if not hasattr(element, '__iter__'):
-                    self.eligs[elig_id] += element
-                    tens_np[[i]] = td_error[0][0] * self.eligs[elig_id]
-                    print(element)
-                    print(f"td error = {td_error[0][0]}")
-                    print(f"Elig[gradient] = {self.eligs[elig_id]}")
-                    elig_id += 1
-                else:
-                    for j, subelement in enumerate(element):
-                        self.eligs[elig_id] += subelement
-                        print(subelement)
-                        print(f"td error = {td_error[0][0]}")
-                        print(f"Elig[gradient] = {self.eligs[elig_id]}")
-                        tens_np[[i], [j]] = td_error[0][0] * self.eligs[elig_id]
-                        elig_id += 1
+        tape = np.multiply(self.eligs, td_error)
+
+        self.decay_eligibilites()
+
 
         return tape
 
 
 
-    def fit(self, feature, td_error, epochs=2, mbs=1, vfrac=0.1, verbosity=1, callbacks=[]):
+    def fit(self, feature, td_error, epochs=1, mbs=1, vfrac=0.1, verbosity=1, callbacks=[]):
 
         params = self.model.trainable_weights
         for cb in callbacks:
@@ -80,12 +70,8 @@ class SplitGD:
                 cb.on_epoch_begin(epoch)
             for _ in range(1):
                 with tf.GradientTape() as tape:
-                    prediction = self.model([feature])
-                    print("="*100)
-                    print(prediction)
-                    gradients = tape.gradient(
-                        prediction, params)
-                    print(gradients)
+                    prediction = self.model(feature)
+                    gradients = tape.gradient(prediction, params)
                     gradients = self.modify_gradients(gradients, td_error)
                     self.model.optimizer.apply_gradients(
                         zip(gradients, params))
