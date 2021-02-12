@@ -41,45 +41,38 @@ class SplitGD:
         self.eligs = np.array([])
 
     # Subclass this with something useful.
-    def modify_gradients(self, tape, td_error):
-        td_error *= -1
-        tape = tf.clip_by_global_norm(tape, 10)[0]
+    def modify_gradients(self, gradients, td_error):
+        tape = tf.clip_by_global_norm(gradients, 10)[0]
         # Tape contains tensors of either two or one dimension, need to keep shape intact:
         if len(self.eligs) == 0:
-            self.eligs = tf.zeros(shape=np.shape(tape), dtype=tf.float32)
-
+            self.eligs = tf.zeros(shape=np.shape(gradients), dtype=tf.float32)
         print(self.eligs)
-        self.eligs = np.add(self.eligs, tape)
-
+        self.eligs = np.add(self.eligs, gradients)
         tape = np.multiply(self.eligs, td_error)
-
         self.decay_eligibilites()
-
-
-        return tape
+        return gradients
 
 
 
     def fit(self, feature, td_error, epochs=1, mbs=1, vfrac=0.1, verbosity=1, callbacks=[]):
-
         params = self.model.trainable_weights
-        for cb in callbacks:
-            cb.on_train_begin()
-        for epoch in range(epochs):
-            for cb in callbacks:
-                cb.on_epoch_begin(epoch)
-            for _ in range(1):
-                with tf.GradientTape() as tape:
-                    prediction = self.model(feature)
-                    gradients = tape.gradient(prediction, params)
-                    gradients = self.modify_gradients(gradients, td_error)
-                    self.model.optimizer.apply_gradients(
-                        zip(gradients, params))
+        # for cb in callbacks:
+        #     cb.on_train_begin()
+        # for epoch in range(epochs):
+        #     for cb in callbacks:
+        #         cb.on_epoch_begin(epoch)
+        #     for _ in range(1):
+        with tf.GradientTape() as tape:
+            prediction = self.model(feature)
+            gradients = tape.gradient(prediction, params)
+            gradients = self.modify_gradients(gradients, td_error)
+            self.model.optimizer.apply_gradients(
+                zip(gradients, params))
             # if verbosity > 0:
             # self.end_of_epoch_action(train_ins, train_targs, val_ins, val_targs, epoch,
             #  verbosity=verbosity, callbacks=callbacks)
-        for cb in callbacks:
-            cb.on_train_end()
+        #for cb in callbacks:
+        #    cb.on_train_end()
 
     # The call to model.evaluate does 2 things for a set of features and targets: 1) computes the loss, 2) applies
     # the model's "metric" (which may differ from the loss) to produce an "evaluation".  A typical metric is
