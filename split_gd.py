@@ -43,11 +43,8 @@ class SplitGD:
 
     # Subclass this with something useful.
     def modify_gradients(self, tape, td_error):
-        print("=" * 100)
-        err = (-1 * (td_error))
         elig_id = 0
         # Tape contains tensors of either two or one dimension, need to keep shape intact:
-        print(tape[0][0][0])
         for tens in tape:
 
             tens_np = tens.numpy()
@@ -55,27 +52,23 @@ class SplitGD:
             for i, element in enumerate(tens_np):
                 if not hasattr(element, '__iter__'):
                     self.eligs[elig_id] += element
-                    tens_np[[i]] = td_error * self.eligs[elig_id]
+                    tens_np[[i]] = td_error[0][0] * self.eligs[elig_id]
+                    print(element)
+                    print(f"td error = {td_error[0][0]}")
+                    print(f"Elig[gradient] = {self.eligs[elig_id]}")
                     elig_id += 1
                 else:
                     for j, subelement in enumerate(element):
                         self.eligs[elig_id] += subelement
-                        tens_np[[i], [j]] = td_error * self.eligs[elig_id]
+                        print(subelement)
+                        print(f"td error = {td_error[0][0]}")
+                        print(f"Elig[gradient] = {self.eligs[elig_id]}")
+                        tens_np[[i], [j]] = td_error[0][0] * self.eligs[elig_id]
                         elig_id += 1
 
         return tape
 
-    # This returns a tensor of losses, OR the value of the averaged tensor.  Note: use .numpy() to get the
-    # value of a tensor.
 
-    # def gen_loss(self, features, targets, avg=False):
-    #     # Feed-forward pass to produce outputs/predictions
-    #     #print("Feats", features)
-    #     predictions = self.model(features)
-    #     #print("PREDSSSSSSS", predictions)
-    #     # model.loss = the loss function
-    #     loss = self.model.loss(targets, predictions)
-    #     return tf.reduce_mean(loss).numpy() if avg else loss
 
     def fit(self, feature, td_error, epochs=2, mbs=1, vfrac=0.1, verbosity=1, callbacks=[]):
 
@@ -87,9 +80,12 @@ class SplitGD:
                 cb.on_epoch_begin(epoch)
             for _ in range(1):
                 with tf.GradientTape() as tape:
-                    prediction = self.model(feature)
+                    prediction = self.model([feature])
+                    print("="*100)
+                    print(prediction)
                     gradients = tape.gradient(
                         prediction, params)
+                    print(gradients)
                     gradients = self.modify_gradients(gradients, td_error)
                     self.model.optimizer.apply_gradients(
                         zip(gradients, params))
