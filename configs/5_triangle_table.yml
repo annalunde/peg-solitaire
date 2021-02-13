@@ -26,7 +26,7 @@ Actor:
   epsilon: 0.8
 
   #Epsilon decay
-  epsilon_decay: 0.990
+  epsilon_decay: 0.999 # Recommended for 500 episodes
 
 Environment:
 

@@ -86,7 +86,7 @@ class Actor:
         """
         Reset eli_dict after episode ends
         """
-        self.eli_dict = {}  # defaultdict(lambda: 0)
+        self.eli_dict = {}
 
     def get_action(self, state, legal_actions):
         """

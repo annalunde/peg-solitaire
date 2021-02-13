@@ -23,7 +23,7 @@ def plot_learning(remaining_pegs):
     plt.show()
 
 
-def main(neural=True):
+def main(neural=False):
     """
     Sets the parameters for the Environment, Critic, and Actor according to the imported config file.
     Creates an environment where a predefined number of episodes can be performed.

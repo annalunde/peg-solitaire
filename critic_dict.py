@@ -32,16 +32,16 @@ class TableCritic(Critic):
 
     # Updates dictionary with the formula: V(S) = V(s) + learning_rate*td_err*eligibility
     # Oppdater for å ta inn SAP om nødvendig?
-    def train(self, state, td_err):
+    def train(self, state, td_error):
         """
         Updates value_dict using the formula: V(S) = V(s) + learning_rate*td_err*eligibility
         :param state: list[list[boolean]]
-        :param td_err: float
+        :param td_error: float
         """
         if str(state) in self.value_dict.keys():
-            self.value_dict[str(state)] += self.learning_rate * td_err * self.eli_dict[str(state)]
+            self.value_dict[str(state)] += self.learning_rate * td_error * self.eli_dict[str(state)]
         else:
-            self.value_dict[str(state)] = self.learning_rate * td_err * self.eli_dict[str(state)]
+            self.value_dict[str(state)] = self.learning_rate * td_error * self.eli_dict[str(state)]
 
     # Updates eligibility dictionary using replacing traces: 1 if S = St, discount_factor*eli_decay*eli_dict[state]
     def update_eligs(self, state, i):  # i is index of state in history
