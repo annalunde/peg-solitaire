@@ -2,55 +2,80 @@ import random
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers
 from split_gd import SplitGD
+from critic import Critic
 
 
-class CriticNN:
-    def __init__(self, dims, alpha, eli_decay, gamma):
+class CriticNN(Critic):
+    def __init__(self, dims, learning_rate, eli_decay, discount_factor):
+        super().__init__(learning_rate=learning_rate, eli_decay=eli_decay, discount_factor=discount_factor)
         self.dims = dims
-        self.alpha = alpha
-        self.eli_decay = eli_decay
-        self.gamma = gamma
-        self.model = self.gennet(dims, alpha)
-        self.splitGD = SplitGD(self.model, 0, self.alpha,
-                               self.gamma, self.eli_decay)
+        self.model = self.gennet(dims, alpha=self.learning_rate)
+        self.splitGD = SplitGD(self.model, self.learning_rate,
+                               self.discount_factor, self.eli_decay)
         self.studied = []
 
+    def reset_eli_dict(self):
+        """
+        Resets eligibilities (done before a new episode)
+        """
+        self.splitGD.reset_eli_dict()
+
+    def update_eligs(self, *args):
+        """
+        Decays eligibilities for one step
+        """
+        self.splitGD.update_eligs()
+
     def train(self, state, td_error):
-        x_train = self.convert_state_to_tensor(state)
+        """
+        Trains network after a new observation (td_error), eligibilites come into use in splitGD class fit function
+        """
+        state_tensor = self.convert_state_to_tensor(state)
         td_error_tensor = tf.reshape(td_error, [1, 1])
-        #print("y_train", error2)
-        self.model = self.splitGD.fit(feature=x_train, td_error=td_error_tensor)
+        self.model = self.splitGD.fit(state_tensor=state_tensor, td_error=td_error_tensor)
 
-
-    def compute_td_err(self, state, state_prime, reward):
-        if state not in self.studied:
-            self.studied.append(state)
+    def compute_td_err(self, current_state, next_state, reward):
+        """
+        Computes TD-error after performing an action from current_state leading next_state and reward
+        Measures degree of surprise after a state transition
+        """
+        # Initialize unseen states as random float between 0 and 1
+        if current_state not in self.studied:
+            self.studied.append(current_state)
             state_value = random.uniform(0, 1)
         else:
-            s = self.convert_state_to_tensor(state)
+            # Predict value of current state
+            s = self.convert_state_to_tensor(current_state)
             state_value = self.splitGD.model.predict(s)[0][0]
 
-        if state_prime not in self.studied:
+        # Initialize unseen "next" states as random float between 0 and 1 as well
+        if next_state not in self.studied:
             state_prime_value = random.uniform(0, 1)
         else:
-            s_p = self.convert_state_to_tensor(state_prime)
+            # Predict value of new state
+            s_p = self.convert_state_to_tensor(next_state)
             state_prime_value = self.splitGD.model.predict(s_p)[0][0]
-        return reward + self.gamma*state_prime_value - state_value
+        return reward + self.discount_factor * state_prime_value - state_value  # delta = r + V(s') - V(s)
 
     def convert_state_to_tensor(self, state):
+        """
+        Converts a list representation of the state to a tensor
+        """
         tensor = tf.convert_to_tensor(
             [np.concatenate([np.array(i) for i in state])])
-        return tf.reshape(tensor, [1, 16])
+        return tf.reshape(tensor, [1, self.dims[0]])  # dims[0] depends on board size
 
-    def gennet(self, dims, alpha=0.01, opt='SGD', loss='MeanSquaredError()', activation="relu", last_activation="relu"):
+    def gennet(self, dims, alpha, opt='SGD', loss='MeanSquaredError()', activation="relu", last_activation="relu"):
+        """
+        Compiles a keras model with dimensions given by dims
+        """
         model = keras.models.Sequential()
         opt = eval('keras.optimizers.' + opt)
         loss = eval('tf.keras.losses.' + loss)
         model.add(keras.layers.Dense(input_shape=(dims[0],),  # Determines shape after first input of a board state
                                      units=dims[0], activation=activation))
-        for layer in range(1, len(dims)-1):
+        for layer in range(1, len(dims) - 1):
             model.add(keras.layers.Dense(
                 units=dims[layer], activation=activation))
         model.add(keras.layers.Dense(

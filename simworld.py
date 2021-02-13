@@ -391,8 +391,7 @@ class Environment:
     and can vary certain other parameters between games if desired
     """
 
-    def __init__(self, step_reward, final_reward, loser_penalty, boardsize, open_cells, board_type="Diamond",
-                 track_history=False):
+    def __init__(self, step_reward, final_reward, loser_penalty, boardsize, open_cells, board_type="Diamond"):
         """
         Initializes a gaming environment.
         :param step_reward: reward for making a single move in the game
@@ -411,7 +410,7 @@ class Environment:
 
         self.Board_class = DiamondBoard if board_type == "Diamond" else TriangleBoard
 
-        self.board = self.Board_class(boardsize, open_cells, track_history)
+        self.board = self.Board_class(boardsize, open_cells, track_history=False)
 
         self.final_reward = final_reward * step_reward * self.board.count_pieces() if step_reward > 0 else final_reward
         self.loser_penalty = loser_penalty
@@ -447,12 +446,13 @@ class Environment:
         """
         return self.board.is_finished()
 
-    def new_game(self):
+    def new_game(self, track_history=False):
         """
         Resets boardgame and starts a new one
+        :param track_history: Allows for replay of the game (for visualization)
         """
         self.board = self.Board_class(
-            self.board.size, self.board.open_cells, self.board.track_history)
+            self.board.size, self.board.open_cells, track_history=track_history)
 
 
 # if __name__ == '__main__':
