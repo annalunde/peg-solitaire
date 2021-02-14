@@ -49,7 +49,8 @@ class CriticNN(Critic):
         else:
             # Predict value of current state
             s = self.convert_state_to_tensor(current_state)
-            state_value = self.splitGD.model(s)[0][0]
+            state_value = self.splitGD.model(s).numpy()[0][0]
+            print(f"model(s): {state_value}")
 
         # Initialize unseen "next" states as random float between 0 and 1 as well
         if next_state not in self.studied:
@@ -57,7 +58,8 @@ class CriticNN(Critic):
         else:
             # Predict value of new state
             s_p = self.convert_state_to_tensor(next_state)
-            state_prime_value = self.splitGD.model(s_p)[0][0]
+            state_prime_value = self.splitGD.model(s_p).numpy()[0][0]
+            print(f"model(s_p): {state_prime_value}")
         # delta = r + V(s') - V(s)
         return reward + self.discount_factor * state_prime_value - state_value
 
@@ -70,7 +72,7 @@ class CriticNN(Critic):
         # dims[0] depends on board size
         return tf.reshape(tensor, [1, self.dims[0]])
 
-    def gennet(self, dims, alpha, opt='SGD', loss='MeanSquaredError()', activation="relu"):
+    def gennet(self, dims, alpha, opt='SGD', loss='MeanSquaredError()', activation="relu", last_activatiion="sigmoid"):
         """
         Compiles a keras model with dimensions given by dims
         """
@@ -79,8 +81,10 @@ class CriticNN(Critic):
         loss = eval('tf.keras.losses.' + loss)
         model.add(keras.layers.Dense(input_shape=(dims[0],),  # Determines shape after first input of a board state
                                      units=dims[0], activation=activation))
-        for layer in range(1, len(dims)):
+        for layer in range(1, len(dims)-1):
             model.add(keras.layers.Dense(
                 units=dims[layer], activation=activation))
+        model.add(keras.layers.Dense(
+                units=dims[-1], activation=last_activatiion))
         model.compile(optimizer=opt(lr=alpha), loss=loss)
         return model

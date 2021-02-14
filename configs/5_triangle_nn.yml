@@ -1,6 +1,6 @@
 Critic:
   #Learning rate
-  learning_rate: 0.01
+  learning_rate: 0.001
 
   #Discount Factor
   discount_factor: 0.9
@@ -10,7 +10,7 @@ Critic:
 
   #Dims (Will be ignored for TableCritic)
   # NOTE: dims[0] MUST equal size**2 if Diamondboard or size(size+1)/2 if Triangle
-  dims : !!python/tuple [15,3,1]
+  dims : !!python/tuple [15, 4, 3,1]
 
 Actor:
   #Learning rate
@@ -23,13 +23,10 @@ Actor:
   eli_decay: 0.85
 
   #Epsilon
-  epsilon: 0.8
-
-  #Epsilon decay
-  epsilon_decay: 0.999 # Recommended for 500 episodes
+  epsilon: 1
 
   #Final epsilon
-  final_epsilon: 0.01
+  final_epsilon: 0.001
 
 Environment:
 
@@ -46,14 +43,14 @@ Environment:
   step_reward: 1
 
   #Final reward
-  final_reward: 50
+  final_reward: 10
 
   #Loser penalty
-  loser_penalty: -100
+  loser_penalty: -20
 
 Training:
   #Number of training episodes
-  number_of_episodes: 200
+  number_of_episodes: 300
 
 
 Critic_type:
