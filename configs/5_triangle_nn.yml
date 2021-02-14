@@ -55,7 +55,7 @@ Training:
   #Number of training episodes
   number_of_episodes: 200
 
+
 Critic_type:
-  #Boolean vaiable to
-  neural: False
+  neural: True
 
