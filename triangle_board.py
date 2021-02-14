@@ -25,6 +25,7 @@ class TriangleBoard(Board):
 
         """
         super().__init__(size, open_cells, track_history)
+        #self.board_type == "Triangle"
 
         # Builds board with 1's
         for i in range(size):
