@@ -6,7 +6,7 @@ This is the first of three projects in the AI programming course at NTNU. The gr
 
 Figure 1 provides a high-level view of the system design.
 
-![Actor-Critic Reinforcement Learner system](images/td.png | width = 100)
+![Actor-Critic Reinforcement Learner system](images/td.png){:height="50%" width="50%"}
 
 **File structure:**
 
