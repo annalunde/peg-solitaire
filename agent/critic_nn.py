@@ -11,7 +11,7 @@ class CriticNN(Critic):
         super().__init__(learning_rate=learning_rate,
                          eli_decay=eli_decay, discount_factor=discount_factor)
         self.dims = dims
-        self.model = self.gennet(dims, alpha=self.learning_rate)
+        self.model = self.gennet(dims, learning_rate=self.learning_rate)
         self.splitGD = SplitGD(self.model, self.learning_rate,
                                self.discount_factor, self.eli_decay)
         self.studied = []
@@ -31,6 +31,8 @@ class CriticNN(Critic):
     def train(self, state, td_error):
         """
         Trains network after a new observation (td_error), eligibilites come into use in splitGD class fit function
+        :param state: list(list(int))
+        :param td_error: float
         """
         state_tensor = self.convert_state_to_tensor(state)
         td_error_tensor = tf.reshape(td_error, [1, 1])
@@ -41,6 +43,9 @@ class CriticNN(Critic):
         """
         Computes TD-error after performing an action from current_state leading next_state and reward
         Measures degree of surprise after a state transition
+        :param current_state: list(list(int))
+        :param next_state: list(list(int))
+        :param reward: integer
         """
         # Initialize unseen states as random float between 0 and 1
         if current_state not in self.studied:
@@ -66,15 +71,18 @@ class CriticNN(Critic):
     def convert_state_to_tensor(self, state):
         """
         Converts a list representation of the state to a tensor
+        :param state: list(list(int))
         """
         tensor = tf.convert_to_tensor(
             [np.concatenate([np.array(i) for i in state])])
         # dims[0] depends on board size
         return tf.reshape(tensor, [1, self.dims[0]])
 
-    def gennet(self, dims, alpha, opt='SGD', loss='MeanSquaredError()', activation="relu", last_activatiion="sigmoid"):
+    def gennet(self, dims, learning_rate, opt='SGD', loss='MeanSquaredError()', activation="relu", last_activatiion="sigmoid"):
         """
         Compiles a keras model with dimensions given by dims
+        :param dims: list(int)
+        :param learning_rate: float 
         """
         model = keras.models.Sequential()
         opt = eval('keras.optimizers.' + opt)
@@ -86,5 +94,5 @@ class CriticNN(Critic):
                 units=dims[layer], activation=activation))
         model.add(keras.layers.Dense(
             units=dims[-1], activation=last_activatiion))
-        model.compile(optimizer=opt(lr=alpha), loss=loss)
+        model.compile(optimizer=opt(lr=learning_rate), loss=loss)
         return model
