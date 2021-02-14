@@ -1,7 +1,9 @@
 from critic_dict import TableCritic
 from critic_nn import CriticNN
 from actor import Actor
-from simworld import Environment
+from environment import Environment
+from diamond_board import DiamondBoard
+from triangle_board import TriangleBoard
 import yaml
 import matplotlib.pyplot as plt
 from copy import deepcopy
@@ -34,11 +36,12 @@ def main(neural=True):
     For each episode, the actor and the critic are updated according to the Actor-Critic model.
     Finally, epsilon is set to zero, and the environment plays a game with the updated policy.
     """
-    env = Environment(step_reward=env_cfg["step_reward"],
+
+    env = Environment(boardsize=env_cfg["boardsize"],
+                      open_cells=env_cfg["open_cells"],
+                      step_reward=env_cfg["step_reward"],
                       final_reward=env_cfg["final_reward"],
                       loser_penalty=env_cfg["loser_penalty"],
-                      boardsize=env_cfg["boardsize"],
-                      open_cells=env_cfg["open_cells"],
                       board_type=env_cfg["board_type"])
     critic_class = CriticNN if neural else TableCritic
     critic = critic_class(learning_rate=critic_cfg["learning_rate"],
