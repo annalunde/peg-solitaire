@@ -28,6 +28,9 @@ Actor:
   #Epsilon decay
   epsilon_decay: 0.9993423349014151 # Recommended for 500 episodes
 
+  #Final epsilon
+  final_epsilon: 0.01
+
 Environment:
 
   #Boardsize
@@ -50,4 +53,9 @@ Environment:
 
 Training:
   #Number of training episodes
-  number_of_episodes: 500
+  number_of_episodes: 200
+
+Critic_type:
+  #Boolean vaiable to
+  neural: False
+

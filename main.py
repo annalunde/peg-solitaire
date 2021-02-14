@@ -6,11 +6,13 @@ import yaml
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
-config = yaml.full_load(open("configs/5_triangle_table.yml"))
+config = yaml.full_load(open("configs/5_triangle_nn.yml"))
 env_cfg = config["Environment"]
 actor_cfg = config["Actor"]
 critic_cfg = config["Critic"]
 training_cfg = config["Training"]
+#True if neural net is to be used.
+critic_type = config["Critic_type"]
 
 
 def plot_learning(remaining_pegs):
@@ -25,7 +27,7 @@ def plot_learning(remaining_pegs):
     plt.show()
 
 
-def main(neural=True):
+def main(neural=critic_type["neural"]):
     """
     Sets the parameters for the Environment, Critic, and Actor according to the imported config file.
     Creates an environment where a predefined number of episodes can be performed.
