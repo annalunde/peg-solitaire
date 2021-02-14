@@ -6,7 +6,7 @@ This is the first of three projects in the AI programming course at NTNU. The gr
 
 Figure 1 provides a high-level view of the system design.
 
-![Actor-Critic Reinforcement Learner system](images/td.png){:height="50%" width="50%"}
+<img src=images/td.png width="500" height="500">
 
 **File structure:**
 
@@ -27,4 +27,5 @@ and starts the whole training loop.
 
 |                        Progression of Learning                         |                                Visualization of Game Play                                 |
 | :--------------------------------------------------------------------: | :---------------------------------------------------------------------------------------: |
-| ![Actor-Critic Reinforcement Learner progression](images/learning.png) | ![Visualization of game play](https://media.giphy.com/media/2exV3fa4z82ytv9pCf/giphy.gif) |
+| <img src=images/learning.png width="475" height="350">                 | ![Visualization of game play](https://media.giphy.com/media/2exV3fa4z82ytv9pCf/giphy.gif) |
+  
