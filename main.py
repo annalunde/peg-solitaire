@@ -34,11 +34,17 @@ def main(neural=True):
     For each episode, the actor and the critic are updated according to the Actor-Critic model.
     Finally, epsilon is set to zero, and the environment plays a game with the updated policy.
     """
+    episodes = training_cfg["number_of_episodes"]
+    boardsize = critic_cfg["dims"][0]  # dims[0] will be total number of cells on the board
+    open_cells = env_cfg["open_cells"]
+    # Calculation to make sure epsilon is decayed towards final_epsilon at the end of training
+    epsilon_decay = actor_cfg["final_epsilon"]**(1/(episodes*(boardsize-len(open_cells))))
+
     env = Environment(step_reward=env_cfg["step_reward"],
                       final_reward=env_cfg["final_reward"],
                       loser_penalty=env_cfg["loser_penalty"],
                       boardsize=env_cfg["boardsize"],
-                      open_cells=env_cfg["open_cells"],
+                      open_cells=open_cells,
                       board_type=env_cfg["board_type"])
     critic_class = CriticNN if neural else TableCritic
     critic = critic_class(learning_rate=critic_cfg["learning_rate"],
@@ -49,10 +55,10 @@ def main(neural=True):
                   discount_factor=actor_cfg["discount_factor"],
                   eli_decay=actor_cfg["eli_decay"],
                   epsilon=actor_cfg["epsilon"],
-                  epsilon_decay=actor_cfg["epsilon_decay"])
+                  epsilon_decay=epsilon_decay)  # Calculated above to end up at approx final epsilon at the end of run
     remaining_pegs = []
 
-    for episode in range(training_cfg["number_of_episodes"]):
+    for episode in range(episodes):
         env.new_game()
         path = []
         print(f"Playing episode number {episode + 1}")
