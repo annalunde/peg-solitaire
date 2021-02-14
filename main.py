@@ -5,8 +5,9 @@ from simworld import Environment
 import yaml
 import matplotlib.pyplot as plt
 from copy import deepcopy
+from tqdm import tqdm  # Progressbar
 
-config = yaml.full_load(open("configs/5_triangle_nn.yml"))
+config = yaml.full_load(open("configs/4_diamond_nn.yml"))
 env_cfg = config["Environment"]
 actor_cfg = config["Actor"]
 critic_cfg = config["Critic"]
@@ -60,10 +61,9 @@ def main(neural=critic_type["neural"]):
                   epsilon_decay=epsilon_decay)  # Calculated above to end up at approx final epsilon at the end of run
     remaining_pegs = []
 
-    for episode in range(episodes):
+    for episode in tqdm(range(episodes), desc=f"Playing {episodes} episodes"):
         env.new_game()
         path = []
-        print(f"Playing episode number {episode + 1}")
         critic.reset_eli_dict()
         actor.reset_eli_dict()
         while not env.game_is_finished():
@@ -107,7 +107,7 @@ def main(neural=critic_type["neural"]):
         legal_actions = env.get_actions()
         action = actor.get_action(current_state, legal_actions)
         env.perform_action(action)
-    env.board.visualize(0.1)
+    env.board.visualize(0.3)
 
 
 main()

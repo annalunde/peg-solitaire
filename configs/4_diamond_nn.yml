@@ -50,7 +50,7 @@ Environment:
 
 Training:
   #Number of training episodes
-  number_of_episodes: 300
+  number_of_episodes: 150
 
 
 Critic_type:
