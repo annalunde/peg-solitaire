@@ -10,7 +10,7 @@ Critic:
 
   #Dims (Will be ignored for TableCritic)
   # NOTE: dims[0] MUST equal size**2 if Diamondboard or size(size+1)/2 if Triangle
-  dims : !!python/tuple [16, 4, 3,1]
+  dims : !!python/tuple [25, 4, 3,1]
 
 Actor:
   #Learning rate
@@ -31,13 +31,13 @@ Actor:
 Environment:
 
   #Boardsize
-  boardsize: 4
+  boardsize: 5
 
   #Boardtype
   board_type: "Diamond"
 
   #Open cells
-  open_cells: [!!python/tuple [2,1]]
+  open_cells: [!!python/tuple [2,1], !!python/tuple [0,0]]
 
   #Step reward
   step_reward: 1
@@ -50,7 +50,7 @@ Environment:
 
 Training:
   #Number of training episodes
-  number_of_episodes: 100
+  number_of_episodes: 5000
 
 
 Critic_type:

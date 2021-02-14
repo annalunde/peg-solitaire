@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 from tqdm import tqdm  # Progressbar
 
-config = yaml.full_load(open("configs/4_diamond_nn.yml"))
+config = yaml.full_load(open("configs/default_nn.yml"))
 env_cfg = config["Environment"]
 actor_cfg = config["Actor"]
 critic_cfg = config["Critic"]
@@ -44,7 +44,7 @@ def main(neural=critic_type["neural"]):
     boardsize = critic_cfg["dims"][0]
     open_cells = env_cfg["open_cells"]
     # Calculation to make sure epsilon is decayed towards final_epsilon at the end of training
-    
+
     epsilon_decay = actor_cfg["final_epsilon"] ** (1 / (episodes * (boardsize - len(open_cells))))
 
 
