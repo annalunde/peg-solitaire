@@ -25,4 +25,4 @@ and starts the whole training loop.
 
 |                Progression of Learning                 |                                Visualization of Game Play                                 |
 | :----------------------------------------------------: | :---------------------------------------------------------------------------------------: |
-| <img src=images/learning.png width="475" height="300"> | ![Visualization of game play](https://media.giphy.com/media/2exV3fa4z82ytv9pCf/giphy.gif) |
+| <img src=images/learning.png width="475" height="350"> | ![Visualization of game play](https://media.giphy.com/media/2exV3fa4z82ytv9pCf/giphy.gif) |
