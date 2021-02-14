@@ -129,6 +129,11 @@ class TriangleBoard(Board):
             clearLabels = {}
             nodeFilled = []
             nodeClear = []
+            moved_node = []
+            if action is None:
+                continue
+            else:
+                moved_node.append(action[1])
 
             for n in graph.nodes:
                 row, col = n[0], n[1]
@@ -142,6 +147,10 @@ class TriangleBoard(Board):
             # Draw filled nodes
             nx.draw(graph, pos=pos_dict, nodelist=nodeFilled,
                     node_color='black', edgecolors='black', node_size=1000)
+
+            # Draw moved node
+            nx.draw(graph, pos=pos_dict, nodelist=moved_node,
+                    node_color='blue', edgecolors='black', node_size=1000)
 
             # Draw labels for filled nodes
             nx.draw_networkx_labels(
