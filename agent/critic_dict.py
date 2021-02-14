@@ -1,6 +1,6 @@
 import random
 from collections import defaultdict
-from critic import Critic
+from agent.critic import Critic
 
 # I added this comment
 # Using a dictionary to store state values

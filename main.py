@@ -1,9 +1,9 @@
-from critic_dict import TableCritic
-from critic_nn import CriticNN
-from actor import Actor
-from environment import Environment
-from diamond_board import DiamondBoard
-from triangle_board import TriangleBoard
+from agent.critic_dict import TableCritic
+from agent.critic_nn import CriticNN
+from agent.actor import Actor
+from environment.environment import Environment
+from environment.diamond_board import DiamondBoard
+from environment.triangle_board import TriangleBoard
 import yaml
 import matplotlib.pyplot as plt
 from copy import deepcopy

@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 import networkx as nx
 import copy
-from board import Board
+from environment.board import Board
 
 
 class TriangleBoard(Board):

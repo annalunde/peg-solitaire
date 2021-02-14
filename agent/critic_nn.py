@@ -2,8 +2,8 @@ import random
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from split_gd import SplitGD
-from critic import Critic
+from agent.split_gd import SplitGD
+from agent.critic import Critic
 
 
 class CriticNN(Critic):

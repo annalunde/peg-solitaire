@@ -1,5 +1,4 @@
 
-
 class Critic:
     """
     Abstract class represent a generic critic.

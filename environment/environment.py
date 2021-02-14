@@ -1,8 +1,8 @@
 import networkx as nx
 from matplotlib import pyplot as plt
 import copy
-from triangle_board import TriangleBoard
-from diamond_board import DiamondBoard
+from environment.triangle_board import TriangleBoard
+from environment.diamond_board import DiamondBoard
 # from diamond_board import DiamondBoard
 # rom triangle_board import TriangleBoard
 
