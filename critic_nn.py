@@ -34,8 +34,7 @@ class CriticNN(Critic):
         """
         state_tensor = self.convert_state_to_tensor(state)
         td_error_tensor = tf.reshape(td_error, [1, 1])
-        self.model = self.splitGD.fit(
-            state_tensor=state_tensor, td_error=td_error_tensor)
+        self.model = self.splitGD.fit(state_tensor=state_tensor, td_error=td_error_tensor)
 
     def compute_td_err(self, current_state, next_state, reward):
         """

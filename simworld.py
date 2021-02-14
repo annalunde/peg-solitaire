@@ -407,7 +407,6 @@ class Environment:
         :param loser_penalty: Sets penalty (negative reward) for ending up in final state without winning
         :param boardsize: Decides size of board to be played inside environment
         :param open_cells: A list of cells to initialize as empty in the boards
-        :param track_history: Whether to track gameplay within boards for visualization later
         """
 
         self.step_reward = step_reward
