@@ -1,7 +1,9 @@
 from critic_dict import TableCritic
 from critic_nn import CriticNN
 from actor import Actor
-from simworld import Environment
+from environment import Environment
+from diamond_board import DiamondBoard
+from triangle_board import TriangleBoard
 import yaml
 import matplotlib.pyplot as plt
 from copy import deepcopy
@@ -38,10 +40,13 @@ def main(neural=critic_type["neural"]):
     Finally, epsilon is set to zero, and the environment plays a game with the updated policy.
     """
     episodes = training_cfg["number_of_episodes"]
-    boardsize = critic_cfg["dims"][0]  # dims[0] will be total number of cells on the board
+    # dims[0] will be total number of cells on the board
+    boardsize = critic_cfg["dims"][0]
     open_cells = env_cfg["open_cells"]
     # Calculation to make sure epsilon is decayed towards final_epsilon at the end of training
+    
     epsilon_decay = actor_cfg["final_epsilon"] ** (1 / (episodes * (boardsize - len(open_cells))))
+
 
     env = Environment(step_reward=env_cfg["step_reward"],
                       final_reward=env_cfg["final_reward"],
