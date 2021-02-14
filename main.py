@@ -9,7 +9,7 @@ from copy import deepcopy
 config = yaml.full_load(open("configs/5_triangle_table.yml"))
 env_cfg = config["Environment"]
 actor_cfg = config["Actor"]
-critic_cfg = config["Critic_table"]
+critic_cfg = config["Critic"]
 training_cfg = config["Training"]
 
 
