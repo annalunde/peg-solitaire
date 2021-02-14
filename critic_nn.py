@@ -50,7 +50,7 @@ class CriticNN(Critic):
             # Predict value of current state
             s = self.convert_state_to_tensor(current_state)
             state_value = self.splitGD.model(s).numpy()[0][0]
-            print(f"model(s): {state_value}")
+            #print(f"model(s): {state_value}")
 
         # Initialize unseen "next" states as random float between 0 and 1 as well
         if next_state not in self.studied:
@@ -59,7 +59,7 @@ class CriticNN(Critic):
             # Predict value of new state
             s_p = self.convert_state_to_tensor(next_state)
             state_prime_value = self.splitGD.model(s_p).numpy()[0][0]
-            print(f"model(s_p): {state_prime_value}")
+            #print(f"model(s_p): {state_prime_value}")
         # delta = r + V(s') - V(s)
         return reward + self.discount_factor * state_prime_value - state_value
 
