@@ -1,16 +1,6 @@
-Critic_table:
+Critic:
   #Learning rate
-  learning_rate: 0.01
-
-  #Discount Factor
-  discount_factor: 0.9
-
-  #Eligibility decay
-  eli_decay: 0.85
-
-Actor:
-  #Learning rate
-  learning_rate: 0.7
+  learning_rate: 0.0001
 
   #Discount Factor
   discount_factor: 0.9
@@ -18,15 +8,24 @@ Actor:
   #Eligibility decay
   eli_decay: 0.1
 
+  #Dims (Will be ignored for TableCritic)
+  # NOTE: dims[0] MUST equal size**2 if Diamondboard or size(size+1)/2 if Triangle
+  dims: !!python/tuple [16, 4, 3, 1]
+
+Actor:
+  #Learning rate
+  learning_rate: 0.0005
+
+  #Discount Factor
+  discount_factor: 0.9
+
+  #Eligibility decay
+  eli_decay: 0.99
+
   #Epsilon
-  epsilon: 0.8
-
-  #Epsilon decay
-  epsilon_decay: 0.9956275604353287
-
+  epsilon: 0.5
 
 Environment:
-
   #Boardsize
   boardsize: 4
 
@@ -34,7 +33,7 @@ Environment:
   board_type: "Diamond"
 
   #Open cells
-  open_cells: [!!python/tuple [1,2]]
+  open_cells: [!!python/tuple [2, 2]]
   #Solvable (1,2),(2,1)
   #Not solvable (1,1),(2,2)
 
@@ -48,8 +47,4 @@ Environment:
   final_reward: 2
 
   #Loser penalty
-  loser_penalty: -1
-
-Training:
-  #Number of episodes
-  number_of_episodes: 1000
+  loser_penalty: -5

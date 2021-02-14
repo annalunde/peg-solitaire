@@ -58,8 +58,6 @@ class Actor:
                 self.discount_factor * self.eli_decay
             element = {(str(state), str(action)): value}
             self.eli_dict.update(element)
-            # self.eli_dict[(str(state), str(action))] = self.discount_factor * \
-            #self.eli_decay * self.eli_dict[(str(state), str(action))]
 
     def get_elig(self, state, action):
         """
@@ -89,7 +87,7 @@ class Actor:
         """
         Reset eli_dict after episode ends
         """
-        self.eli_dict = {}  # defaultdict(lambda: 0)
+        self.eli_dict = {}
 
     def get_action(self, state, legal_actions):
         """
