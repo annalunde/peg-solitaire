@@ -54,7 +54,8 @@ class Actor:
             self.eli_dict[(str(state), str(action))] = 1
             return
         else:
-            value = self.get_elig(state, action) * self.discount_factor * self.eli_decay
+            value = self.get_elig(state, action) * \
+                self.discount_factor * self.eli_decay
             element = {(str(state), str(action)): value}
             self.eli_dict.update(element)
 

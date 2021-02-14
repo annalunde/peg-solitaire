@@ -1,4 +1,4 @@
-Critic_table:
+Critic:
   #Learning rate
   learning_rate: 0.0001
 
@@ -7,6 +7,10 @@ Critic_table:
 
   #Eligibility decay
   eli_decay: 0.1
+
+  #Dims (Will be ignored for TableCritic)
+  # NOTE: dims[0] MUST equal size**2 if Diamondboard or size(size+1)/2 if Triangle
+  dims: !!python/tuple [16, 4, 3, 1]
 
 Actor:
   #Learning rate
@@ -22,7 +26,6 @@ Actor:
   epsilon: 0.5
 
 Environment:
-
   #Boardsize
   boardsize: 4
 
@@ -30,7 +33,7 @@ Environment:
   board_type: "Diamond"
 
   #Open cells
-  open_cells: [!!python/tuple [2,2]]
+  open_cells: [!!python/tuple [2, 2]]
   #Solvable (1,2),(2,1)
   #Not solvable (1,1),(2,2)
 

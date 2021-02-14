@@ -4,7 +4,7 @@ import numpy as np
 
 class SplitGD:
     """
-    Takes in a keras model and accommodates needs to modify gradients before applying them during training
+    Takes in a keras model and accommodates needs to modify gradients before applying them during backpropagation
     Uses eligibility traces to update params from previously seen states
     """
 
@@ -22,7 +22,8 @@ class SplitGD:
         how long ago they occurred during the episode.
         Discount by discount factor is also performed here
         """
-        self.eligs = np.multiply(self.eligs, self.discount_factor * self.eli_decay)
+        self.eligs = np.multiply(
+            self.eligs, self.discount_factor * self.eli_decay)
 
     def reset_eli_dict(self):
         """
@@ -42,7 +43,8 @@ class SplitGD:
             self.eligs = tf.zeros(shape=np.shape(gradients), dtype=tf.float32)
         self.eligs = np.add(self.eligs, gradients,
                             dtype=object)  # Eligibilty depends on how active parameter was for input state
-        gradients = np.multiply(self.eligs, td_error[0][0])  # Gradients are changed to equal e_i * delta
+        # Gradients are changed to equal e_i * delta
+        gradients = np.multiply(self.eligs, td_error[0][0])
         # self.decay_eligibilites() # Do this either here or in main method after calling train()
         return gradients
 

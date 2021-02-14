@@ -20,10 +20,12 @@ def plot_learning(remaining_pegs):
     """
     episode = [i for i in range(len(remaining_pegs))]
     plt.plot(episode, remaining_pegs)
+    plt.xlabel("Episode number")
+    plt.ylabel("Remaining pegs")
     plt.show()
 
 
-def main(neural=False):
+def main(neural=True):
     """
     Sets the parameters for the Environment, Critic, and Actor according to the imported config file.
     Creates an environment where a predefined number of episodes can be performed.
@@ -59,11 +61,13 @@ def main(neural=False):
         while not env.game_is_finished():
             current_state = deepcopy(env.get_state())
             legal_actions = env.get_actions()
-            action = actor.get_action(state=current_state, legal_actions=legal_actions)
+            action = actor.get_action(
+                state=current_state, legal_actions=legal_actions)
             path.append((str(current_state), str(action)))
             reward = env.perform_action(action=action)
 
-            td_err = critic.compute_td_err(current_state=current_state, next_state=env.get_state(), reward=reward)
+            td_err = critic.compute_td_err(
+                current_state=current_state, next_state=env.get_state(), reward=reward)
 
             if neural:
                 # Previous states on the path are updated as well during the call to train() by eligibility traces
@@ -72,8 +76,10 @@ def main(neural=False):
 
             # Update actor beliefs on SAPs for all pairs seen thus far in the episode
             for i, sap in enumerate(reversed(path)):
-                actor.update_eli_dict(state=str(sap[0]), action=str(sap[1]), i=i)
-                actor.update_policy_dict(state=str(sap[0]), action=str(sap[1]), td_err=td_err)
+                actor.update_eli_dict(
+                    state=str(sap[0]), action=str(sap[1]), i=i)
+                actor.update_policy_dict(
+                    state=str(sap[0]), action=str(sap[1]), td_err=td_err)
                 if not neural:
                     critic.update_eligs(str(sap[0]), i)
                     critic.train(state=str(sap[0]), td_error=td_err)
@@ -82,7 +88,8 @@ def main(neural=False):
 
     plot_learning(remaining_pegs)
 
-    env.new_game(track_history=True)  # Enable history tracking to visualize final game
+    # Enable history tracking to visualize final game
+    env.new_game(track_history=True)
 
     print(f"Actor final epsilon: {actor.epsilon}")
     actor.epsilon = 0  # Set exploration to 0

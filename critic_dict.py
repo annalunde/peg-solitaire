@@ -16,7 +16,8 @@ class TableCritic(Critic):
         :param eli_decay: float
         :param discount_factor: float
         """
-        super().__init__(learning_rate=learning_rate, eli_decay=eli_decay, discount_factor=discount_factor)
+        super().__init__(learning_rate=learning_rate,
+                         eli_decay=eli_decay, discount_factor=discount_factor)
         self.value_dict = {}
         self.eli_dict = defaultdict(lambda: 0)
 
@@ -39,9 +40,11 @@ class TableCritic(Critic):
         :param td_error: float
         """
         if str(state) in self.value_dict.keys():
-            self.value_dict[str(state)] += self.learning_rate * td_error * self.eli_dict[str(state)]
+            self.value_dict[str(state)] += self.learning_rate * \
+                td_error * self.eli_dict[str(state)]
         else:
-            self.value_dict[str(state)] = self.learning_rate * td_error * self.eli_dict[str(state)]
+            self.value_dict[str(state)] = self.learning_rate * \
+                td_error * self.eli_dict[str(state)]
 
     # Updates eligibility dictionary using replacing traces: 1 if S = St, discount_factor*eli_decay*eli_dict[state]
     def update_eligs(self, state, i):  # i is index of state in history
@@ -54,7 +57,8 @@ class TableCritic(Critic):
         if i == 0:
             self.eli_dict[str(state)] = 1
         else:
-            self.eli_dict[str(state)] = self.discount_factor * self.eli_decay * self.eli_dict[str(state)]
+            self.eli_dict[str(state)] = self.discount_factor * \
+                self.eli_decay * self.eli_dict[str(state)]
 
     # Return value for given state
     def get_value(self, state):

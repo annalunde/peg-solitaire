@@ -8,7 +8,8 @@ from critic import Critic
 
 class CriticNN(Critic):
     def __init__(self, dims, learning_rate, eli_decay, discount_factor):
-        super().__init__(learning_rate=learning_rate, eli_decay=eli_decay, discount_factor=discount_factor)
+        super().__init__(learning_rate=learning_rate,
+                         eli_decay=eli_decay, discount_factor=discount_factor)
         self.dims = dims
         self.model = self.gennet(dims, alpha=self.learning_rate)
         self.splitGD = SplitGD(self.model, self.learning_rate,
@@ -33,7 +34,8 @@ class CriticNN(Critic):
         """
         state_tensor = self.convert_state_to_tensor(state)
         td_error_tensor = tf.reshape(td_error, [1, 1])
-        self.model = self.splitGD.fit(state_tensor=state_tensor, td_error=td_error_tensor)
+        self.model = self.splitGD.fit(
+            state_tensor=state_tensor, td_error=td_error_tensor)
 
     def compute_td_err(self, current_state, next_state, reward):
         """
@@ -56,7 +58,8 @@ class CriticNN(Critic):
             # Predict value of new state
             s_p = self.convert_state_to_tensor(next_state)
             state_prime_value = self.splitGD.model.predict(s_p)[0][0]
-        return reward + self.discount_factor * state_prime_value - state_value  # delta = r + V(s') - V(s)
+        # delta = r + V(s') - V(s)
+        return reward + self.discount_factor * state_prime_value - state_value
 
     def convert_state_to_tensor(self, state):
         """
@@ -64,9 +67,10 @@ class CriticNN(Critic):
         """
         tensor = tf.convert_to_tensor(
             [np.concatenate([np.array(i) for i in state])])
-        return tf.reshape(tensor, [1, self.dims[0]])  # dims[0] depends on board size
+        # dims[0] depends on board size
+        return tf.reshape(tensor, [1, self.dims[0]])
 
-    def gennet(self, dims, alpha, opt='SGD', loss='MeanSquaredError()', activation="relu", last_activation="relu"):
+    def gennet(self, dims, alpha, opt='SGD', loss='MeanSquaredError()', activation="relu"):
         """
         Compiles a keras model with dimensions given by dims
         """
@@ -75,10 +79,8 @@ class CriticNN(Critic):
         loss = eval('tf.keras.losses.' + loss)
         model.add(keras.layers.Dense(input_shape=(dims[0],),  # Determines shape after first input of a board state
                                      units=dims[0], activation=activation))
-        for layer in range(1, len(dims) - 1):
+        for layer in range(1, len(dims)):
             model.add(keras.layers.Dense(
                 units=dims[layer], activation=activation))
-        model.add(keras.layers.Dense(
-            dims[-1], activation=last_activation))
         model.compile(optimizer=opt(lr=alpha), loss=loss)
         return model
