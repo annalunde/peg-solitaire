@@ -12,7 +12,7 @@ env_cfg = config["Environment"]
 actor_cfg = config["Actor"]
 critic_cfg = config["Critic"]
 training_cfg = config["Training"]
-#True if neural net is to be used.
+# True if neural net is to be used.
 critic_type = config["Critic_type"]
 
 
@@ -41,7 +41,7 @@ def main(neural=critic_type["neural"]):
     boardsize = critic_cfg["dims"][0]  # dims[0] will be total number of cells on the board
     open_cells = env_cfg["open_cells"]
     # Calculation to make sure epsilon is decayed towards final_epsilon at the end of training
-    epsilon_decay = actor_cfg["final_epsilon"]**(1/(episodes*(boardsize-len(open_cells))))
+    epsilon_decay = actor_cfg["final_epsilon"] ** (1 / (episodes * (boardsize - len(open_cells))))
 
     env = Environment(step_reward=env_cfg["step_reward"],
                       final_reward=env_cfg["final_reward"],
@@ -61,7 +61,7 @@ def main(neural=critic_type["neural"]):
                   epsilon_decay=epsilon_decay)  # Calculated above to end up at approx final epsilon at the end of run
     remaining_pegs = []
 
-    for episode in tqdm(range(episodes), desc=f"Playing {episodes} episodes"):
+    for episode in tqdm(range(episodes), desc=f"Playing {episodes} episodes", colour='#39ff14'):
         env.new_game()
         path = []
         critic.reset_eli_dict()
@@ -107,7 +107,7 @@ def main(neural=critic_type["neural"]):
         legal_actions = env.get_actions()
         action = actor.get_action(current_state, legal_actions)
         env.perform_action(action)
-    env.board.visualize(0.3)
+    env.board.visualize(0.1)
 
 
 main()
