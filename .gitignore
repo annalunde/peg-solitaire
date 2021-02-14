@@ -1,4 +1,8 @@
-__pycache__/
+environment/__pycache__/
+*.py[cod]
+*$py.class
+
+agent/__pycache__/
 *.py[cod]
 *$py.class
 

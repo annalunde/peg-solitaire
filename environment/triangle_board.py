@@ -111,9 +111,8 @@ class TriangleBoard(Board):
         for n in graph.nodes:
             row, col = n[0], n[1]
 
-            potentials = [(row - 1, col), (row - 1, col + 1), (row, col + 1), (row + 1, col), (row + 1, col - 1),
+            potentials = [(row - 1, col), (row - 1, col - 1), (row, col + 1), (row + 1, col), (row + 1, col + 1),
                           (row, col - 1)]
-
             valid_neighbor_pos = filter(
                 lambda pos: self.validate_cell_coordinates([pos]), potentials)
 

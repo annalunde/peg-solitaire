@@ -108,10 +108,7 @@ class DiamondBoard(Board):
             for col in range(len(self.current_state[row])):
                 n = (row, col)
                 graph.add_node(n)
-                if isinstance(self, DiamondBoard):  # Scaling positions to make it look nice
-                    pos_dict[n] = (- n[0] + n[1], - n[0] - n[1])
-                else:
-                    pos_dict[n] = (- 10 * n[0] + 20 * n[1], - 10 * n[0])
+                pos_dict[n] = (- n[0] + n[1], - n[0] - n[1])
 
         #  Add edges to graph depending on Board logic
         for n in graph.nodes:
