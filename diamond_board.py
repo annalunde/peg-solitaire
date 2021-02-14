@@ -29,7 +29,6 @@ class DiamondBoard(Board):
 
         """
         super().__init__(size, open_cells, track_history)
-        #self.board_type == "Diamond"
 
         # Builds board with 1's
         for _ in range(size):

@@ -25,7 +25,6 @@ class TriangleBoard(Board):
 
         """
         super().__init__(size, open_cells, track_history)
-        #self.board_type == "Triangle"
 
         # Builds board with 1's
         for i in range(size):
@@ -90,71 +89,70 @@ class TriangleBoard(Board):
                             legal_actions.append(potential_action)
         return legal_actions
 
+    def visualize(self, frame_interval):
+        if not self.track_history:
+            raise Exception(
+                "Track history was turned OFF, no gameplay to visualize")
 
-def visualize(self, frame_interval):
-    if not self.track_history:
-        raise Exception(
-            "Track history was turned OFF, no gameplay to visualize")
+        # Start by creating a node graph that represents the board's size and neighbor edges,
+        # fill node values with first board configuration
 
-    # Start by creating a node graph that represents the board's size and neighbor edges,
-    # fill node values with first board configuration
+        graph = nx.Graph()
+        pos_dict = {}
 
-    graph = nx.Graph()
-    pos_dict = {}
+        for row in range(self.size):
+            for col in range(len(self.current_state[row])):
+                n = (row, col)
+                graph.add_node(n)
 
-    for row in range(self.size):
-        for col in range(len(self.current_state[row])):
-            n = (row, col)
-            graph.add_node(n)
+                pos_dict[n] = (- 10 * n[0] + 20 * n[1], - 10 * n[0])
 
-            pos_dict[n] = (- 10 * n[0] + 20 * n[1], - 10 * n[0])
-
-    #  Add edges to graph depending on Board logic
-    for n in graph.nodes:
-        row, col = n[0], n[1]
-
-        potentials = [(row - 1, col), (row - 1, col + 1), (row, col + 1), (row + 1, col), (row + 1, col - 1),
-                      (row, col - 1)]
-
-        valid_neighbor_pos = filter(
-            lambda pos: self.validate_cell_coordinates([pos]), potentials)
-
-        for neighbor in valid_neighbor_pos:
-            graph.add_edge(n, neighbor)
-
-    # Start visualization process
-    plt.switch_backend(newbackend="macosx")
-    plt.show()
-    for action, board_state in self.history:
-
-        filledLabels = {}
-        clearLabels = {}
-        nodeFilled = []
-        nodeClear = []
-
+        #  Add edges to graph depending on Board logic
         for n in graph.nodes:
             row, col = n[0], n[1]
-            if board_state[row][col] == 1:
-                filledLabels[n] = n
-                nodeFilled.append(n)
-            else:
-                clearLabels[n] = n
-                nodeClear.append(n)
 
-        # Draw filled nodes
-        nx.draw(graph, pos=pos_dict, nodelist=nodeFilled,
-                node_color='black', edgecolors='black', node_size=1000)
+            potentials = [(row - 1, col), (row - 1, col + 1), (row, col + 1), (row + 1, col), (row + 1, col - 1),
+                          (row, col - 1)]
 
-        # Draw labels for filled nodes
-        nx.draw_networkx_labels(
-            graph, pos_dict, filledLabels, font_size=11, font_color='white')
+            valid_neighbor_pos = filter(
+                lambda pos: self.validate_cell_coordinates([pos]), potentials)
 
-        # Draw clear nodes
-        nx.draw(graph, pos=pos_dict, nodelist=nodeClear,
-                node_color='white', edgecolors='black', node_size=1000)
+            for neighbor in valid_neighbor_pos:
+                graph.add_edge(n, neighbor)
 
-        # Draw labels for clear nodes
-        nx.draw_networkx_labels(
-            graph, pos_dict, clearLabels, font_size=11, font_color='black')
+        # Start visualization process
+        plt.switch_backend(newbackend="macosx")
+        plt.show()
+        for action, board_state in self.history:
 
-        plt.pause(frame_interval)
+            filledLabels = {}
+            clearLabels = {}
+            nodeFilled = []
+            nodeClear = []
+
+            for n in graph.nodes:
+                row, col = n[0], n[1]
+                if board_state[row][col] == 1:
+                    filledLabels[n] = n
+                    nodeFilled.append(n)
+                else:
+                    clearLabels[n] = n
+                    nodeClear.append(n)
+
+            # Draw filled nodes
+            nx.draw(graph, pos=pos_dict, nodelist=nodeFilled,
+                    node_color='black', edgecolors='black', node_size=1000)
+
+            # Draw labels for filled nodes
+            nx.draw_networkx_labels(
+                graph, pos_dict, filledLabels, font_size=11, font_color='white')
+
+            # Draw clear nodes
+            nx.draw(graph, pos=pos_dict, nodelist=nodeClear,
+                    node_color='white', edgecolors='black', node_size=1000)
+
+            # Draw labels for clear nodes
+            nx.draw_networkx_labels(
+                graph, pos_dict, clearLabels, font_size=11, font_color='black')
+
+            plt.pause(frame_interval)

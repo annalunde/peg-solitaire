@@ -2,8 +2,10 @@ import random
 from collections import defaultdict
 from critic import Critic
 
-#I added this comment
+# I added this comment
 # Using a dictionary to store state values
+
+
 class TableCritic(Critic):
     """
     CriticDict keeps track of the value and eligibility of each state using dictionaries.

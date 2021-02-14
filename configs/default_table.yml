@@ -24,9 +24,7 @@ Actor:
   #Epsilon decay
   epsilon_decay: 0.9956275604353287
 
-
 Environment:
-
   #Boardsize
   boardsize: 6
 
@@ -34,7 +32,7 @@ Environment:
   board_type: "Diamond"
 
   #Open cells
-  open_cells: [!!python/tuple [1,1]]
+  open_cells: [!!python/tuple [1, 1]]
   #Solvable (1,2),(2,1)
   #Not solvable (1,1),(2,2)
 

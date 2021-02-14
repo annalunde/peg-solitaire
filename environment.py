@@ -26,10 +26,6 @@ class Environment:
 
         self.step_reward = step_reward
 
-        if board_type not in {"Diamond", "Triangle"}:
-            raise Exception(
-                f"Board type must be either 'Diamond' or 'Triangle', input was {board_type}")
-
         self.Board_class = DiamondBoard if board_type == "Diamond" else TriangleBoard
         self.board = self.Board_class(
             boardsize, open_cells, track_history=False)

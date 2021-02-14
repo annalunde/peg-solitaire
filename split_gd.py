@@ -1,4 +1,5 @@
 import tensorflow as tf
+import warnings
 import numpy as np
 
 
@@ -36,16 +37,16 @@ class SplitGD:
         Modifies the gradients before backpropagation is performed.
         Modification depends on td-error and eligibility
         """
-
+        warnings.filterwarnings("ignore")
         # Initializes new eligibilites after a reset (this will be done during the first fit() call in an episode)
         if len(self.eligs) == 0:
             # Gradients are a list of tensors, need to keep shape intact
             self.eligs = tf.zeros(shape=np.shape(gradients), dtype=tf.float32)
-        self.eligs = np.add(self.eligs, gradients,
-                            dtype=object)  # Eligibilty depends on how active parameter was for input state
+        # Eligibilty depends on how active parameter was for input state e_i = e_i + grad
+        self.eligs = np.add(self.eligs, gradients, dtype=object)
         # Gradients are changed to equal e_i * delta
         gradients = np.multiply(self.eligs, td_error[0][0])
-        #print(td_error)
+        # print(td_error)
         # self.decay_eligibilites() # Do this either here or in main method after calling train()
         return gradients
 

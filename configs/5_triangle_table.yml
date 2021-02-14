@@ -10,7 +10,7 @@ Critic:
 
   #Dims (Will be ignored for TableCritic)
   # NOTE: dims[0] MUST equal size**2 if Diamondboard or size(size+1)/2 if Triangle
-  dims : !!python/tuple [15,3,1]
+  dims: !!python/tuple [15, 3, 1]
 
 Actor:
   #Learning rate
@@ -32,7 +32,6 @@ Actor:
   final_epsilon: 0.01
 
 Environment:
-
   #Boardsize
   boardsize: 5
 
@@ -40,7 +39,7 @@ Environment:
   board_type: "Triangle"
 
   #Open cells
-  open_cells: [!!python/tuple [2,1]]
+  open_cells: [!!python/tuple [2, 1]]
 
   #Step reward
   step_reward: 1
@@ -58,4 +57,3 @@ Training:
 Critic_type:
   #Boolean vaiable to
   neural: False
-
