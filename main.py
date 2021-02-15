@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 from tqdm import tqdm  # Progressbar
 
-config = yaml.full_load(open("configs/4_diamond_nn.yml"))
+config = yaml.full_load(open("configs/5_triangle_table.yml"))
 env_cfg = config["Environment"]
 actor_cfg = config["Actor"]
 critic_cfg = config["Critic"]
