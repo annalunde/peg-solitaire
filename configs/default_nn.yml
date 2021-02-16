@@ -1,6 +1,6 @@
 Critic:
   #Learning rate
-  learning_rate: 0.0001
+  learning_rate: 0.001
 
   #Discount Factor
   discount_factor: 0.9
@@ -10,7 +10,7 @@ Critic:
 
   #Dims (Will be ignored for TableCritic)
   # NOTE: dims[0] MUST equal size**2 if Diamondboard or size(size+1)/2 if Triangle
-  dims: !!python/tuple [25, 20, 15, 5, 1]
+  dims: !!python/tuple [25, 20, 5, 1]
   #[25,4,3,1]
 
 Actor:
@@ -27,7 +27,7 @@ Actor:
   epsilon: 1
 
   #Final epsilon
-  final_epsilon: 0.001
+  final_epsilon: 0.01
 
 Environment:
   #Boardsize
@@ -37,21 +37,21 @@ Environment:
   board_type: "Diamond"
 
   #Open cells
-  open_cells: [!!python/tuple [3, 2]]
+  open_cells: [!!python/tuple [2, 1]]
   #Works: [2, 1], [0, 0]
 
   #Step reward
   step_reward: 1
 
   #Final reward
-  final_reward: 10
+  final_reward: 50000
 
   #Loser penalty
-  loser_penalty: -30
+  loser_penalty: -20
 
 Training:
   #Number of training episodes
-  number_of_episodes: 1000
+  number_of_episodes: 3000
 
 Critic_type:
   neural: True
