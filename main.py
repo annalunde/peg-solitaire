@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 from tqdm import tqdm  # Progressbar
 
-config = yaml.full_load(open("configs/4_diamond_nn.yml"))
+config = yaml.full_load(open("configs/default_nn.yml"))
 env_cfg = config["Environment"]
 actor_cfg = config["Actor"]
 critic_cfg = config["Critic"]
@@ -93,6 +93,7 @@ def main(neural=critic_type["neural"]):
                     state=str(sap[0]), action=str(sap[1]), i=i)
                 actor.update_policy_dict(
                     state=str(sap[0]), action=str(sap[1]), td_err=td_err)
+
                 if not neural:
                     critic.update_eligs(str(sap[0]), i)
                     critic.train(state=str(sap[0]), td_error=td_err)

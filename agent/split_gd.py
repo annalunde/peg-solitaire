@@ -46,8 +46,6 @@ class SplitGD:
         self.eligs = np.add(self.eligs, gradients, dtype=object)
         # Gradients are changed to equal e_i * delta
         gradients = np.multiply(self.eligs, td_error[0][0])
-        # print(td_error)
-        # self.decay_eligibilites() # Do this either here or in main method after calling train()
         return gradients
 
     def fit(self, state_tensor, td_error):

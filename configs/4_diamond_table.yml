@@ -1,6 +1,6 @@
 Critic:
   #Learning rate
-  learning_rate: 0.0001
+  learning_rate: 0.1
 
   #Discount Factor
   discount_factor: 0.9
@@ -25,8 +25,8 @@ Actor:
   #Epsilon
   epsilon: 1
 
-  #Epsilon decay
-  epsilon_decay: 0.9994 # Recommended for 500 episodes
+  #Final epsilon
+  final_epsilon: 0.001
 
 Environment:
   #Boardsize
@@ -36,7 +36,7 @@ Environment:
   board_type: "Diamond"
 
   #Open cells
-  open_cells: [!!python/tuple [2, 1]]
+  open_cells: [!!python/tuple [1, 2]]
   #Solvable (1,2),(2,1)
   #Not solvable (1,1),(2,2)
 
@@ -44,11 +44,14 @@ Environment:
   step_reward: 1
 
   #Final reward
-  final_reward: 20
+  final_reward: 10
 
   #Loser penalty
-  loser_penalty: -5
+  loser_penalty: -20
 
 Training:
   #Number of training episodes
   number_of_episodes: 500
+
+Critic_type:
+  neural: False

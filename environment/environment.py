@@ -72,31 +72,3 @@ class Environment:
         """
         self.board = self.Board_class(
             self.board.size, self.board.open_cells, track_history=track_history)
-
-
-# if __name__ == '__main__':
-#     import random
-#
-#     # Regarding Size 4 Diamond board: the only two of the four middle cells that yield a solvable board are:
-#     # env = Environment(1,1, loser_penalty=-5,boardsize=4,open_cells=[(1,2)], board_type="Diamond", track_history=True)
-#     env = Environment(1, 1, loser_penalty=-5, boardsize=4, open_cells=[(2, 1)], board_type="Diamond",
-#                       track_history=True)
-#
-#     # env = Environment(1,1, loser_penalty=0,boardsize=4,open_cells=[(5,1)], board_type="Diamond", track_history=True)
-#
-#     scores = []
-#     x = []
-#     i = 0
-#     while not env.board.is_won():
-#         env.new_game()
-#         score = 0
-#         i += 1
-#         if i % 50 == 0:
-#             print(f"playing game number {i}")
-#         while not env.game_is_finished():
-#             a = random.choice(env.get_actions())
-#             score += env.perform_action(a)
-#         scores.append(score)
-#         x.append(i)
-#
-#     env.board.visualize(1)
