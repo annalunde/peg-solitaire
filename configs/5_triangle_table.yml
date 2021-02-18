@@ -26,7 +26,7 @@ Actor:
   epsilon: 1
 
   #Final epsilon
-  final_epsilon: 0.01
+  final_epsilon: 0.001
 
 Environment:
   #Boardsize

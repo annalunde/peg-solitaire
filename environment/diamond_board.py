@@ -167,6 +167,5 @@ class DiamondBoard(Board):
             nx.draw_networkx_labels(
                 graph, pos_dict, clearLabels, font_size=11, font_color='black')
 
-
             plt.pause(frame_interval)
             plt.clf()

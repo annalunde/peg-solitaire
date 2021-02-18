@@ -100,37 +100,3 @@ class Actor:
         if random.uniform(0, 1) >= self.epsilon:
             return max(legal_actions, key=lambda action: self.get_policy(state, action))
         return random.choice(legal_actions)
-
-
-#actor = Actor(1, 1, 1, 1,0.999)
-
-
-# actor.update_eli_dict([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [(2, 2), (2, 2)], 0)
-# actor.update_eli_dict([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [(1, 1), (0, 0)], 0)
-#
-# actor.update_policy_dict([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [(2, 2), (2, 2)], 0.6)
-# actor.update_policy_dict([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [(1, 1), (0, 0)], 0.3)
-# print(actor.policy_dict)
-# print(actor.get_policy([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [(2, 2), (2, 2)]))
-# print(actor.get_action([[1, 1, 1, 1], [1, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]], [[(2, 2), (2, 2)], [(1, 1), (0, 0)]]))
-
-# main
-
-# env = Environment()
-# a = Actor()
-# c = Critic()
-
-# for i in learning100:
-#  env.newboardgame()
-#  current_state = env.getstate()
-#  legal_actions = env.get_legal_actions(current_state)
-
-#  action = a.get_best_action(current_state, legal_actions)
-#  reward = env.perform(action)
-#  path.append(env.getstate())
-
-#  td = critic.compute_td_err(newstate, reward)
-#  for i, state in enumerate(path):
-#    update_eli_dict(state, i)
-
-#  a.update(current_state, action, td)
