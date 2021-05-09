@@ -1,0 +1,20 @@
+environment/__pycache__/
+*.py[cod]
+*$py.class
+
+agent/__pycache__/
+*.py[cod]
+*$py.class
+
+.idea
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+
+/shelf/
+/workspace.xml
